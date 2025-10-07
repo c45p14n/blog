@@ -3,6 +3,13 @@
 const posts = [
     {
         id: 'post-1',
+        title: 'Tame Your Git: Cleaner History, Painless Merges',
+        date: '2025-10-07',
+        excerpt: '',
+        file: 'posts/TameYourGit.html'
+    },
+    {
+        id: 'post-1',
         title: 'Welcome to My Digital Space',
         date: '2025-10-07',
         excerpt: '',
