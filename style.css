@@ -48,7 +48,7 @@ header {
     background: rgba(10, 14, 39, 0.8);
     backdrop-filter: blur(10px);
     border-bottom: 2px solid var(--cyber-blue);
-    padding: 2rem 0;
+    padding: 0.6rem 0;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -247,7 +247,7 @@ footer {
 }
 
 .post-content {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
     font-size: 1.1rem;
     line-height: 1.9;
