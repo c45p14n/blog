@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beginner-friendly C++ basics guide | Caspian</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            
+            <article>
+                <div class="post-header">
+                    <h1>Beginner-friendly C++ basics guide</h1>
+                    <div class="post-meta">October 10, 2025</div>
+                </div>
+                
+                <div class="post-content">
+                  <h2>This Note is a personal note based on The C++ Programming Language, Fourth Edition -- Bjarne Stroustrup 
+                  -- 4th, 2013 book.</h2>
+
+                  <h2>Why This Note exist ?</h2>
+
+                  <p>
+                  I have a pop quiz of these contents and I've been learning C , so i thought I should 
+                  document this journey of Leanrning CPP and it <b>may</b> help someone else as well.
+                  </p>
+
+                  <h2>The Basics</h2>
+
+                  <p>
+                  C++ is a compiled language. For a program to run, its source text has to be processed by <b>a compiler</b>
+                  , producing <b>object files</b>, which are combined by <b>a linker</b> yielding <b>an executable program</b>. A
+                  C++ program typically consists of many source code files.
+                  </p>
+                  <pre><code>source file 1 ==> compile ==> object file 1
+                                           ==> link ==> executable file
+source file 2 ==> compile ==> object file 2  </pre></code>
+                  <p>
+                  An executable program is created for a specific hardware/system combination; it is not portable,
+                  say, from a Mac to a Windows PC. When we talk about portability of C++ programs, we usually
+                  mean portability of source code; that is, the source code can be successfully compiled and run on a
+                  variety of systems. 
+                  </p>
+                  <li>
+                  Core language features, such as built-in types (e.g., <code>char</code> and <code>int</code>) and loops (e.g., <code>for</code>statements and <code>while</code>statements)
+                  </li>
+                  <li>
+                  Standard-library components, such as containers (e.g., <code>vector</code> and <code>map</code>) and I/O operations
+                  (e.g., &gt;&gt; and <code>getline()</code>)
+                  </li>
+                  <p>
+                  <b>C++ is a statically typed language.</b>
+                  </p>
+                  <h2>1 - Hello World !</h2>
+                  <p>
+                  <b>The minimal C++ program is : </b>
+                  </p>
+<pre><code>int main() { }    // the minimal C++ program </pre></code>
+                  <p>
+                  This defines a function called main, which takes no arguments and does nothing.
+                  <b>Curly braces, { }, express grouping in C++</b>. Here, they indicate the start and end of the function
+                  body.
+                  </p>
+                  <p>
+                  Every C++ program must have exactly one global function named <b>main()</b>. The program starts
+                  by executing that function. The <b>int</b> value returned by main(), if any, is the program’s return value to
+                  ‘‘the system.’’ If no value is returned, the system will receive a value indicating successful completion. 
+                  A nonzero value from main() indicates failure. Not every operating system and execution
+                  environment make use of that return value: Linux/Unix-based environments often do, but Windows-based 
+                  environments rarely do. (another reason why Windows is shit ; I wonder why it's still the industry standard OS.)
+                  </p>
+                  <p>
+                  a program that writes Hello, World!:
+                  </p>
+                  <pre><code>#include &lt;iostream&gt;
+
+int main(){
+  std::cout &gt;&gt; "Hello, World!\n";
+}</code></pre>
+                  <p>
+                  The line <code>#include &lt;iostream&gt;</code> instructs the compiler to include the declarations of the standard
+                  stream I/O facilities as found in iostream. Without these declarations, the expression <code>std::cout << "Hello, World!\n"</code>
+                  would make no sense. The operator <b><< (‘‘put to’’)</b> writes its second argument onto its first. In this
+                  case, the string literal <code>"Hello, World!\n"</code> is written onto the standard output stream <code>std::cout</code>. A string
+                  literal is a sequence of characters surrounded by double quotes. In a string literal, the backslash
+                  character \ followed by another character denotes a single ‘‘special character.’’ In this case, <code>\n</code> is the
+                  newline character, so that the characters written are <b>Hello, World!</b> followed by a newline.
+                  The <code>std::</code> specifies that the name <code>cout</code> is to be found in the standard-library namespace (§2.4.2,
+                  Chapter 14). I usually leave out the std:: when discussing standard features; shows how to
+                  make names from a namespace visible without explicit qualification.
+                  </p>
+                  <p>
+                  Essentially all executable code is placed in functions and called directly or indirectly from
+                  main().
+                  </p>
+                  <pre><code>#include &lt;iostream&gt;
+using namespace std;    // make names from std visible without std::
+
+double square(double x){    // square a double precision floating-point number
+  return x∗x;
+}
+void print_square(double x){
+  cout &lt;&lt; "the square of" &lt;&lt; x &lt;&lt; " is " &lt;&lt; square(x) &lt;&lt; "\n";
+}
+
+int main(){
+  print_square(1.234);    // print: the square of 1.234 is 1.52276
+}</code></pre>
+                <h2>2 - Types, Variables, and Arithmetic</h2>
+                <p>
+                Every name and every expression has <b>a type</b> that determines the operations that may be performed
+                on it. For example, the declaration
+                </p>
+                <p>(All of them has a type except you (xo). You accept anything no matter what.)</p>
+                <p>
+                <b>A declaration</b> is a statement that introduces a name into the program. It specifies a type for the
+                named entity:
+                <li>A type defines a set of possible values and a set of operations (for an object).</li>
+                <li>An object is some memory that holds a value of some type.</li>
+                <li>A value is a set of bits interpreted according to a type.</li>
+                <li>A variable is a named object.</li>
+                </p>
+                <p>
+                C++ offers a variety of fundamental types. For example:
+                </p>
+                <pre><code><b>bool</b>    // Boolean, possible values are true and false
+<b>char</b>   // character, for example, 'a', ' z', and '9'
+<b>int</b>    // integer, for example, 1, 42, and 1066
+<b>double</b>   // double-precision floating-point number, for example, 3.14 and 299793.0 </code></pre>
+                <p>
+                Each fundamental type corresponds directly to hardware facilities and has a fixed size that determines 
+                the range of values that can be stored in it:
+                </p>
+                <p>
+                A char variable is of the natural size to hold a character on a given machine (typically an 8-bit
+                byte), and the sizes of other types are quoted in multiples of the size of a char. The size of a type is
+                implementation-defined (i.e., it can vary among different machines) and can be obtained by the
+                sizeof operator; for example, sizeof(char) equals 1 and sizeof(int) is often 4.
+                </p>
+                <p>
+                The arithmetic operators can be used for appropriate combinations of these types:
+                </p>
+                <pre><code>x+y    // plus
++x    // unar y plus
+x−y   // minus
+−x    // unar y minus
+x∗y   // multiply
+x/y   // divide
+x%y   // remainder (modulus) for integers</code></pre> 
+                <p>
+                So can the comparison operators:
+                </p>
+                <pre><code>x==y   // equal
+x!=y    // not equal
+x<y   // less than
+x>y   // greater than
+x<=y    // less than or equal
+x>=y    // greater than or equal</code></pre>
+                <pre><code>void some_function(){   // function that doesn’t return a value
+  double d = 2.2;   // initialize floating-point number
+  int i = 7;    // initialize integer
+  d = d+i;    // assign sum to d
+  i = d∗i;    // assign product to i (truncating the double d*i to an int)
+}</code></pre>
+                <p>
+                <b>Note that = is the assignment operator and == tests equality.</b>
+                </p>
+                <p>
+                C++ offers a variety of notations for expressing initialization, such as the = used above, and a
+                universal form based on curly-brace-delimited initializer lists:
+                </p>
+                <pre><code>double d1 = 2.3;
+double d2 {2.3};
+complex&lt;double&gt; z = 1;    // a complex number with double-precision floating-point scalars
+complex&lt;double&gt; z2 {d1,d2};
+complex<double> z3 = {1,2};   // the = is optional with { ... }
+vector&lt;int&gt; v {1,2,3,4,5,6};    // a vector of ints</code></pre>
+                <p>
+                The <code>=</code>form is traditional and dates back to C, but if in doubt, use the general {}-list form.
+                If nothing else, it saves you from conversions that lose information:
+                </p>
+                <pre><code>int i1 = 7.2;    // i1 becomes 7
+int i2 {7.2};   // error : floating-point to integer conversion
+int i3 = {7.2};   // error : floating-point to integer conversion (the = is redundant)</code></pre>
+                <p>
+                When defining a variable, you don’t actually need to state its type explicitly when it can be
+                deduced from the initializer:
+                </p> 
+                <pre><code>auto b = true;   // a bool
+auto ch = 'x';    // a char
+auto i = 123;   // an int
+auto d = 1.2;   // a double
+auto z = sqrt(y);   // z has the type of whatever sqrt(y) returns</code></pre>
+                <p>
+                C++ offers more specific operations for modifying a variable:
+                </p>
+                <pre><code>x+=y   // x = x+y
+++x   // increment: x = x+1
+x−=y    // x = x-y
+−−x   // decrement: x = x-1
+x∗=y    // scaling: x = x*y
+x/=y    // scaling: x = x/y
+x%=y    // x = x%y</code></pre>
+                <h2>3 - Constants</h2>
+                <p>C++ supports two notions of immutability</p>
+                <li><code>const</code></li>
+                <p>
+                declares an object as constant. This implies a guarantee that once initialized, the value of that 
+                object won't change, and the compiler can make use of this fact for optimizations. It also helps 
+                prevent the programmer from writing code that modifies objects that were not meant to be modified 
+                after initialization.
+                </p>
+                <li><code>constexpr</code></li>
+                <p>
+                marks values or functions that can be evaluated at compile time when given constant inputs. 
+                A constexpr function must be simple enough for the compiler to evaluate it during compilation.
+                A constexpr function can also be called at run time with non-constant arguments; in that case 
+                it behaves like an ordinary function (just not evaluated at compile time). 
+                </p>
+                <h2>4 - Tests & Loops</h2>
+                <pre><code>bool accept(){
+  cout &lt;&lt; "Do you want to proceed (y or n)?\n";   // write question
+  char answer = 0;
+  cin &gt;&gt; answer;    // read answer
+  if (answer == 'y') return true;
+  return false;
+}</code></pre>
+                <p>
+                To match the <code><<</code>output operator <b>(‘‘put to’’)</b>, the <code>>></code> operator <b>(‘‘get from’’)</b> is used for input;
+                <code>cin</code> is the standard input stream. The type of the right-hand operand of <code>>></code> determines what input is
+                accepted, and its right-hand operand is the target of the input operation. 
+                </p>
+                <pre><code>bool accept2(){
+  cout &lt;&lt; "Do you want to proceed (y or n)?\n";   // write question
+  char answer = 0;
+  cin &gt;&gt; answer;    // read answer
+  switch (answer) {
+  case 'y':
+    return true;
+  case 'n':
+    return false;
+  default:
+    cout &lt;&lt; "I will take that for a no.\n";
+    return false;
+  }
+}</code></pre>
+                <p>
+                A <code>switch</code> statement tests a value against a set of constants. The case constants must be distinct, and
+                if the value tested does not match any of them, the default is chosen. If no default is provided, no
+                action is taken if the value doesn’t match any case constant.
+                </p>
+                <pre><code>bool accept3(){
+  int tries = 1;
+  while (tries&lt;4){
+  cout &lt;&lt; "Do you want to proceed (y or n)?\n";   // write question
+  char answer = 0;
+  cin &gt;&gt; answer;    // read answer
+  switch (answer) {
+    case 'y':
+    return true;
+  case 'n':
+    return false;
+  default:
+    cout &lt;&lt; "Sorry, I don't understand that.\n";
+  ++tries;    // increment
+  }
+}
+  cout &lt;&lt; "I'll take that for a no.\n";
+  return false;
+}</code></pre>
+                <p>The <b>while</b> statement executes until its condition becomes <b>false.</b></p>
+                <h2>5 - Pointers, Arrays, and Loops</h2>
+                <p>
+                In declarations, <code>[]</code> means <b>‘‘array of’’</b> and <code>∗</code> means <b>‘‘pointer to.’’</b>
+                </p>
+                <p>The size of an array must be a constant expression</p>
+                <p>
+                A pointer variable can hold the address of an object of the appropriate type:
+                </p>
+                <pre><code>char∗ p = &v[3];    // p points to v’s four th element
+char x = ∗p;    // *p is the object that p points to</code></pre>
+                <p>
+                In an expression, prefix unary<code>∗</code>means <b>‘‘contents of’’</b> and prefix unary<code>&</code>means <b>‘‘address of.’’</b>
+                </p>
+                <p>Consider copying ten elements from one array to another:</p> 
+                <pre><code>void copy_fct(){
+  int v1[10] = {0,1,2,3,4,5,6,7,8,9};
+  int v2[10];   // to become a copy of v1
+  for (auto i=0; i!=10; ++i)    // copy elements
+  v2[i]=v1[i];
+  // ...    marks values or functions that can be evaluated at compile time when given constant inputs. A constexpr function must be simple enough for the compiler to evaluate it during compilation.
+
+A constexpr function can also be called at run time with non-constant arguments; in that case it behaves like an ordinary function (just not evaluated at compile time). 
+}</code></pre>
+                <p>
+                This <code>for</code> statement can be read as <b>‘‘set i to zero; while i is not 10, copy the ith element and increment i.’’ </b>
+                When applied to an integer variable, the increment operator, <b>++</b>   , simply adds 1. C++ also offers
+                a simpler <code>for</code> statement, called a <code>range-for</code> statement, for loops that traverse a sequence in the simplest way:
+                </p>
+               <pre><code>void print(){
+  int v[] = {0,1,2,3,4,5,6,7,8,9};
+  for (auto x : v)    // for each x in v
+    cout &lt;&lt; x &lt;&lt; '\n';
+  for (auto x : {10,21,32,43,54,65})
+    cout &lt;&lt x &lt;&lt '\n';
+  // ...
+} </code></pre> 
+                <p>
+                The first range-for-statement can be read as ‘‘for every element of v, from the first to the last, place
+                a copy in x and print it.’’ Note that we don’t have to specify an array bound when we initialize it
+                with a list. The range-for-statement can be used for any sequence of elements 
+                </p>
+                <p>If we didn’t want to copy the values from v into the variable x, but rather just have x refer to an element, we could write:</p>
+                <pre><code>void increment()
+{
+  int v[] = {0,1,2,3,4,5,6,7,8,9};
+  for (auto& x : v)
+    ++x;
+  // ...
+}</code></pre>
+                <p>
+                In a declaration, the unary suffix<code>&</code> means <b>‘‘reference to.’’</b> A reference is similar to a pointer,
+                except that you don’t need to use a prefix<code>∗</code>to access the value referred to by the reference. Also, a
+                reference cannot be made to refer to a different object after its initialization. When used in declarations, 
+                operators (such as <code>&</code>, <code>∗</code>, and <code>[]</code>) are called declarator operators:
+                </p>
+                <pre><code>T a[n];    // T[n]: array of n Ts
+T∗ p;    // T*: pointer to T
+T& r;    // T&: reference to T
+T f(A);    // T(A): function taking an argument of type A returning a result of type T</code></pre>
+                <p>
+                We try to ensure that a pointer always points to an object, so that dereferencing it is valid. When
+                we don’t have an object to point to or if we need to represent the notion of ‘‘no object available’’
+                (e.g., for an end of a list), we give the pointer the value <code>nullptr</code> (<b>‘‘the null pointer’’</b>). There is only
+                one <code>nullptr</code> shared by all pointer types:
+                </p>
+                <pre><code>double∗ pd = nullptr;
+Link&lt;Record&gt;∗ lst = nullptr;    // pointer to a Link to a Record
+int x = nullptr;    // error : nullptr is a pointer not an integer</code></pre>
+                <p>
+                It is often wise to check that a pointer argument that is supposed to point to something, actually
+                points to something:
+                </p>
+                <pre><code>int count_x(char ∗p, char x)
+    // count the number of occurrences of x in p[]
+    // p is assumed to point to a zero-terminated array of char (or to nothing)
+{
+if (p==nullptr) return 0;
+int count = 0;
+for (; ∗p!=0; ++p)
+if (∗p==x)
+  ++count;
+    return count;
+}</code></pre>
+                <p>
+                Note how we can move a pointer to point to the next element of an array using <code>++</code> and that we can
+                leave out the initializer in a for-statement if we don’t need it.
+                The definition of <code>count_x()</code> assumes that the <code>char∗</code> is a C-style string, that is, that the pointer
+                points to a zero-terminated array of char.
+                In older code, <b>0 or NULL</b> is typically used instead of nullptr. However, <b>using nullptr
+                eliminates potential confusion between integers (such as 0 or NULL) and pointers (such as nullptr)</b>   .
+                </p>
+                <h2>User-Defined Types</h2>
+                <p>
+                Types built out of the built-in types using C++’s abstraction mechanisms are called user-defined types.
+                </p>
+                <h2>1 - Structures</h2>
+                <p>
+                The first step in building a new type is often to organize the elements it needs into a data structure,
+                a <code>struct</code>:
+                </p>
+                <pre><code>struct Vector {
+  int sz;    // number of elements
+  double ∗elem;    // pointer to elements
+};</code></pre>
+                <p>
+                This first version of Vector consists of an int and a <code>double∗</code>.
+                A variable of type Vector can be defined like this:
+                </p>
+                <code>Vector v;</code>
+                <p>
+                However, by itself that is not of much use because v’s elem pointer doesn’t point to anything. To be
+                useful, we must give v some elements to point to.
+                </p>
+                <pre><code>void vector_init(Vector& v, int s){
+  v.elem = new double[s];    // allocate an array of s doubles
+  v.sz = s;
+}</code></pre>
+                <p>
+                That is, v’s elem member gets a pointer produced by the new operator and v’s size member gets the
+                number of elements. The <code>&</code> in <code>Vector&</code> indicates that we pass v by non-const reference ; 
+                that way, <code>vector_init()</code> can modify the vector passed to it.
+                The new operator allocates memory from an area called the free store (<b>also known as dynamic
+                memory and heap</b>).
+                </p>
+                <p>A simple use of Vector looks like this:</p>
+                <pre><code>double read_and_sum(int s)
+// reads integers from cin and return their sum; s is assumed to be positive
+{
+  Vector v;
+  vector_init(v,s);   // allocate s elements for v
+  for (int i=0; i!=s; ++i)
+    cin &gt;&gt; v.elem[i];   // read into elements
+  double sum = 0;
+  for (int i=0; i!=s; ++i)
+    sum += v.elem[i];   // take the sum of the elements
+  return sum;
+}</code></pre>
+                <p><b>Don’t reinvent standard-library components, such as <code>vector</code> and <code>string</code>; use them.</b></p>
+                <p>We use <code>.</code> (dot) to access <b>struct members</b> through a <b>name</b> (and through a reference) and <code>−></code> to
+access <b>struct members</b> through a <b>pointer</b>. For example:</p>
+                <pre><code>void f(Vector v, Vector& rv, Vector∗ pv)
+{
+  int i1 = v.sz;    // access through name
+  int i2 = rv.sz;   // access through reference
+  int i4 = pv−>sz;    // access through pointer
+}</code></pre>
+                <h2>2 - Classes</h2>
+                <p>
+                Having the data specified separately from the operations on it has advantages, such as the ability to
+                use the data in arbitrary ways. However, a tighter connection between the representation and the
+                operations is needed for a user-defined type to have all the properties expected of a ‘‘real type.’’ In
+                particular, we often want to keep the representation inaccessible to users, so as to ease use, guarantee 
+                consistent use of the data, and allow us to later improve the representation. To do that we have
+                to distinguish between the interface to a type (to be used by all) and its implementation (which has
+                access to the otherwise inaccessible data). The language mechanism for that is called a class. A
+                class is defined to have a set of members, which can be data, function, or type members. The interface 
+                is defined by the public members of a class, and private members are accessible only through
+                that interface. 
+                </p>
+                <pre><code>class Vector {
+public:
+  Vector(int s) :elem{new double[s]}, sz{s} { }     // construct a Vector
+  double &operator[](int i) { return elem[i]; }    // element access: subscripting
+  int size() { return sz; }
+private:
+  double ∗elem; // pointer to the elements
+  int sz;    // the number of elements
+};</code></pre>
+                <pre><code>Diagram:
+    Vector:
+      #######
+elem: #     # \
+      #######  \  |#####|#####|#####|#####|#####|#####|
+sz:   #  6  #   &gt; |  0  |  1  |  2  |  3  |  4  |  5  |
+      #######     |#####|#####|#####|#####|#####|#####|</code></pre>
+
+                <p>
+                Basically, the Vector object is a ‘‘handle’’ containing a pointer to the elements (elem) plus the number 
+                of elements (sz). The number of elements can vary from Vector object to
+                Vector object, and a Vector object can have a different number of elements at different times. 
+                However, the Vector object itself is always the same size. This is the basic technique for
+                handling varying amounts of information in C++: a fixed-size handle referring to a variable amount
+                of data ‘‘elsewhere’’
+                </p>
+                <p>
+                Here, the representation of a Vector (the members elem and sz) is accessible only through the
+                interface provided by the public members
+                </p>
+                <pre><code>double read_and_sum(int s)
+{
+Vector v(s);    // make a vector of s elements
+for (int i=0; i!=v.siz e(); ++i)
+  cin &gt;&gt; v[i];    // read into elements
+double sum = 0;
+for (int i=0; i!=v.siz e(); ++i)
+  sum += v[i];    // take the sum of the elements
+return sum;
+}</code></pre>
+                <p>
+                A ‘‘function’’ with the same name as its class is called a constructor, that is, a function used to con-
+                struct objects of a class. So, the constructor, <code>Vector()</code>, replaces <code>vector_init()</code>. Unlike an
+                ordinary function, a constructor is guaranteed to be used to initialize objects of its class. Thus,
+                defining a constructor eliminates the problem of uninitialized variables for a class.
+                <code>Vector(int)</code> defines how objects of type Vector are constructed. In particular, it states that it needs
+                an integer to do that. That integer is used as the number of elements. The constructor initializes
+                the Vector members using a member initializer list:
+                </p>
+                <pre><code>:elem{new double[s]}, sz{s}</code></pre>
+                <p>
+                That is, we first initialize elem with a pointer to s elements of type double obtained from the free
+                store. Then, we initialize sz to s.
+                Access to elements is provided by a subscript function, called <code>operator[]</code>. It returns a reference
+                to the appropriate element (a <code>double&</code>).
+                The <code>size()</code> function is supplied to give users the number of elements.
+                Obviously, <b>error handling</b> is completely missing, but we’ll return to that. Similarly,
+                we did not provide a mechanism to ‘‘give back’’ the array of doubles acquired by new;
+                shows how to use a destructor to elegantly do that.
+                </p>
+                <h2>3 - Enumerations</h2>
+                <pre><code>enum class Color { red, blue , green };
+enum class Traffic_light { green, yellow, red };
+Color col = Color::red;
+Traffic_light light = Traffic_light::red;</code></pre>
+                <p>
+                Note that enumerators (e.g., red) are in the scope of their enum class, so that they can be used
+                repeatedly in different enum classes without confusion. For example, Color::red is Color’s red
+                which is different from Traffic_light::red.
+                <b>Enumerations are used to represent small sets of integer values.</b> They are used to make code
+                more readable and less error-prone than it would have been had the symbolic (and mnemonic) enumerator 
+                names not been used.
+                </p>
+                <p>
+                The class after the enum specifies that an enumeration is strongly typed and that its enumerators
+                are scoped. Being separate types, enum classes help prevent accidental misuses of constants. In
+                particular, we cannot mix Traffic_light and Color values:
+                </p> 
+                <pre><code>Color x = red;    // error : which red?
+Color y = Traffic_light::red;    // error : that red is not a Color
+Color z = Color::red;    // OK
+int i = Color::red;    // error : Color ::red is not an int
+Color c = 2;    // error : 2 is not a Color</code></pre>
+                <p>
+                If you don’t want to explicitly qualify enumerator names and want enumerator values to be ints
+                (without the need for an explicit conversion), you can remove the class from enum class to get a
+                ‘‘plain enum’’.
+                By default, an enum class has only assignment, initialization, and comparisons (e.g., == and <;) 
+                defined. However, an enumeration is a user-defined type.
+                </p>
+                <pre><code>Traffic_light &operator++(Traffic_light &t) {   // prefix increment: ++
+switch (t) {
+  case Traffic_light::green: 
+    return t=Traffic_light::yellow;
+  case Traffic_light::yellow: 
+    return t=Traffic_light::red;
+  case Traffic_light::red: 
+    return t=Traffic_light::green;
+  }
+}
+Traffic_light next = ++light;  // next becomes Traffic_light::green</code></pre>
+                <p>C++ also offers a less strongly typed ‘‘plain’’ enum</p>
+                <h2>Modularity</h2>
+                <pre><code>double sqrt(double);    // the square root function takes a double and returns a double
+class Vector {
+public:
+  Vector(int s);
+  double& operator[](int i);
+  int size();
+private:
+  double∗ elem; // elem points to an array of sz doubles
+  int sz;
+};</code></pre>
+                <p>
+                The key point here is that the function bodies, the function definitions, are ‘‘elsewhere.’’ For this
+                example, we might like for the representation of Vector to be ‘‘elsewhere’’ also, but we will deal
+                with that later (abstract types). The definition of <code>sqrt()</code> will look like this:
+                </p>
+                <pre><code>double sqrt(double d)    // definition of sqrt()
+{    // ... algorithm as found in math textbook ...
+}</code></pre>
+                <p>For Vector, we need to define all three member functions:</p>
+                <pre><code>Vector::Vector(int s)    // definition of the constructor
+  :elem{new double[s]}, sz{s}    // initialize members
+{
+}
+double &Vector::operator[](int i)    // definition of subscripting
+{
+  return elem[i];
+}
+int Vector::siz e()    // definition of size()
+{
+  return sz;
+}</code></pre>
+                <p>
+                a library is simply some ‘‘other code we happen to use’’ written with
+                the same language facilities as we use.
+                </p>
+                <h2>1 - Separate Compilation</h2>
+                <p>
+                C++ supports a notion of separate compilation where user code sees only declarations of types and
+                functions used. The definitions of those types and functions are in separate source files and compiled 
+                separately. This can be used to organize a program into a set of semi-independent code fragments. 
+                Such separation can be used to minimize compilation times and to strictly enforce separation 
+                of logically distinct parts of a program (thus minimizing the chance of errors). A library is
+                often a separately compiled code fragments (e.g., functions).
+                Typically, we place the declarations that specify the interface to a module in a file with a name
+                indicating its intended use.
+                </p> 
+                <pre><code>// Vector.h:
+class Vector {
+public:
+  Vector(int s);
+  double& operator[](int i);
+  int size();
+private:
+  double ∗elem;    // elem points to an array of sz doubles
+  int sz;
+};</code></pre>
+                <p>
+                This declaration would be placed in a file <b>Vector.h</b>, and users will include that file, called a header
+                file, to access that interface.
+                </p>
+                <pre><code>// user.cpp:
+#include "Vector.h"    // get Vector’s interface
+#include &lt;cmath&gt;    // get the the standard-librar y math function interface including sqrt()
+using namespace std;    // make std members visible
+
+double sqrt_sum(Vector &v)
+{
+double sum = 0;
+for (int i=0; i!=v.siz e(); ++i)
+  sum+=sqrt(v[i]);    // sum of square roots
+return sum;
+}</code></pre>
+                <p>
+                To help the compiler ensure consistency, the .cpp file providing the implementation of Vector will
+                also include the .h file providing its interface:
+                </p>
+                <pre><code>// Vector.cpp:
+#include "Vector.h" // get the interface
+Vector::Vector(int s)
+
+:elem{new double[s]}, sz{s}
+{
+}
+double &Vector::operator[](int i)
+{
+  return elem[i];
+}
+int Vector::siz e()
+{
+  return sz;
+}</code></pre>
+                <p>
+                The code in user.cpp and Vector.cpp shares the Vector interface information presented in Vector.h,
+                but the two files are otherwise independent and can be separately compiled.
+                </p>
+                <p>
+                Strictly speaking, using separate compilation isn’t a language issue; it is an issue of how best to
+                take advantage of a particular language implementation. However, it is of great practical importance. 
+                The best approach is to maximize modularity, represent that modularity logically through
+                language features, and then exploit the modularity physically through files for effective separate
+                compilation.
+                </p>
+                <h2>2 - Namespaces</h2>
+                <p>
+                C++ offers namespaces as a mechanism for expressing that some declarations belong
+                together and that their names shouldn’t clash with other names.
+                </p>
+                <pre><code>namespace My_code {
+  class complex { /* ... */ };
+  complex sqrt(complex);
+  // ...
+  int main();
+}
+int My_code::main()
+{
+  complex z {1,2};
+  auto z2 = sqrt(z);
+  std::cout &lt;&lt;  '{' &lt;&lt;  z2.real() &lt;&lt;  ',' &lt;&lt;  z2.imag() &lt;&lt; "}\n";
+  // ...
+};
+int main()
+{
+  return My_code::main();
+}</code></pre>
+                <p>
+                By putting my code into the <code>namespace My_code</code>, I make sure that my names do not conflict with
+                the standard-library names in namespace std. The precaution is wise, because the standard
+                library does provide support for complex arithmetic.
+                The simplest way to access a name in another namespace is to qualify it with the namespace
+                name (e.g., <code>std::cout</code> and <code>My_code::main</code>). The ‘‘real main()’’ is defined in the global namespace,
+                that is, not local to a defined namespace, class, or function. To gain access to names in the standard-library
+                namespace, we can use a using-directive.
+                </p>
+                <pre><code>using namespace std;</code></pre>
+                <p>
+                Namespaces are primarily used to organize larger program components, such as libraries. They
+                simplify the composition of a program out of separately developed parts.
+                </p>
+                <h2>3 - Error Handling</h2>
+                <p>
+                Error handling is a large and complex topic with concerns and ramifications that go far beyond language 
+                facilities into programming techniques and tools. However, C++ provides a few features to
+                help. The major tool is the type system itself. Instead of painstakingly building up our applications
+                from the built-in types and statements, we build
+                more types that are appropriate for our applications and algorithms. 
+                Such higher level constructs simplify our programming, limit
+                our opportunities for mistakes,
+                and increase the compiler’s chances of catching such errors. The majority of C++ constructs are
+                dedicated to the design and implementation of elegant and efficient abstractions. 
+                One effect of this modularity and abstraction (in particular, the
+                use of libraries) is that the point where a run-time error can be detected is separated from the point
+                where it can be handled. As programs grow, and especially when libraries are used extensively,
+                standards for handling errors become important.
+                </p>
+                <h3>1 - Exceptions</h3>
+                <p>
+                Consider again the Vector example. What ought to be done when we try to access an element that
+                is out of range for the vector
+                <li>The writer of Vector doesn’t know what the user would like to have done in this case (the writer of Vector typically doesn’t even know in which program the vector will be running).</li>
+                <li>The user of Vector cannot consistently detect the problem (if the user could, the out-of-range access wouldn’t happen in the first place).</li>
+                </p>
+                <p>
+                The solution is for the Vector implementer to detect the attempted out-of-range access and then tell
+                the user about it. The user can then take appropriate action. For example, <code>Vector::operator[]()</code> can
+                detect an attempted out-of-range access and throw an out_of_range exception:
+                </p>
+                <pre><code>double& Vector::operator[](int i)
+{
+  if (i<0 || size()&gt;=i) throw out_of_range{"Vector::operator[]"};
+  return elem[i];
+}</code></pre>
+                <p>
+                The throw transfers control to a handler for exceptions of type out_of_range in some function that
+                directly or indirectly called <code>Vector::operator[]()</code>. To do that, the implementation will unwind the
+                function call stack as needed to get back to the context of that caller 
+                </p> 
+                <h3>2 - Invariants</h3>
+                <p>
+                The use of exceptions to signal out-of-range access is an example of a function checking its argument 
+                and refusing to act because a basic assumption, a precondition, didn’t hold. Had we formally
+                specified Vector’s subscript operator, we would have said something like ‘‘the index must be in the
+                <code>[0:size())</code> range,’’ and that was in fact what we tested in our <code>operator[]()</code>. Whenever we define a
+                function, we should consider what its preconditions are and if feasible test them.
+                However, <code>operator[]()</code> operates on objects of type Vector and nothing it does makes any sense
+                unless the members of Vector have <b>‘‘reasonable’’</b> values. In particular, we did say ‘‘elem points to
+                an array of sz doubles’’ but we only said that in a comment. Such a statement of what is assumed
+                to be true for a class is called a <b>class invariant</b>, or simply an invariant. It is the job of a constructor
+                to establish the invariant for its class (so that the member functions can rely on it) and for the member 
+                functions to make sure that the invariant holds when they exit. Unfortunately, our Vector constructor 
+                only partially did its job. It properly initialized the Vector members, but it failed to check
+                that the arguments passed to it made sense. Consider:
+                </p>
+                <pre><code>Vector v(−27);
+This is likely to cause chaos.
+Here is a more appropriate definition:
+Vector::Vector(int s)
+{
+  if (s<0) throw length_error{};
+  elem = new double[s];
+  sz = s;</b>
+}</code></pre>
+                <p>
+                I use the standard-library exception <code>length_error</code> to report a non-positive number of elements
+                because some standard-library operations use that exception to report problems of this kind. If
+                operator new can’t find memory to allocate, it throws a <code>std::bad_alloc</code>. We can now write:
+                </p>
+                <pre><code>void test()
+{
+try {
+  Vector v(−27);
+}
+  catch (std::length_error) {    // handle negative size
+}
+  catch (std::bad_alloc) {    // handle memory exhaustion
+}
+}</code></pre>
+                <p>
+                You can define your own classes to be used as exceptions and have them carry arbitrary information
+                from a point where an error is detected to a point where it can be handled.
+                Often, a function has no way of completing its assigned task after an exception is thrown.
+                Then, ‘‘handling’’ an exception simply means doing some minimal local cleanup and rethrowing
+                the exception
+                </p>
+                <h3>3 - Static Assertions</h3>
+                <p>
+                Exceptions report errors found at run time. If an error can be found at compile time, it is usually
+                preferable to do so. That’s what much of the type system and the facilities for specifying the interfaces 
+                to user-defined types are for. However, we can also perform simple checks on other properties 
+                that are known at compile time and report failures as compiler error messages.
+                </p>
+                <pre><code>static_assert(4 <= sizeof(int), "integers are too small");    // check integer size</code></pre>
+                <p>
+                This will write integers are too small if <code>4<=sizeof(int)</code> does not hold, that is, if an int on this system
+                does not have at least 4 bytes. We call such statements of expectations assertions.
+                The <code>static_assert</code> mechanism can be used for anything that can be expressed in terms of constant
+                expressions 
+                </p>
+                <pre><code>constexpr double C = 299792.458;   // km/s
+void f(double speed)
+{
+  const double local_max = 160.0/(60∗60);   // 160 km/h == 160.0/(60*60) km/s
+  static_assert(speed&lt;C,"can't go that fast");   // error : speed must be a constant
+  static_assert(local_max&lt;C,"can't go that fast");   // OK
+  // ...
+}</code></pre>
+                <p>
+                In general, <code>static_assert(A,S)</code> prints S as a compiler error message if A is not true.
+                The most important uses of <code>static_assert</code> come when we make assertions about types used as
+                parameters in generic programming.
+                For runtime-checked assertions
+                </p>
+                </div>
+            </article>
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>

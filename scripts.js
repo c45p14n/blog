@@ -2,7 +2,14 @@
 // Add your posts here in reverse chronological order (newest first)
 const posts = [
     {
-        id: 'post-1',
+        id: 'post-3',
+        title: 'Beginner-friendly C++ basics guide',
+        date: '2025-10-10',
+        excerpt: '',
+        file: 'posts/Beginner-friendly_C++_basics_guide.html'
+    },
+    {
+        id: 'post-2',
         title: 'Tame Your Git: Cleaner History, Painless Merges',
         date: '2025-10-07',
         excerpt: '',
