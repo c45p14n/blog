@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why I’m Leaving Major Social Medias — and the SHADY part of the Internet | Caspian</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            
+            <article>
+                <div class="post-header">
+                    <h1>Why I’m Leaving Major Social Medias — and the SHADY part of the Internet</h1>
+                    <div class="post-meta">October 11, 2025</div>
+                </div>
+                <div class="post-content">
+                <p>
+                I’m done playing in someone else’s living room. After years of using major social platforms and
+                relying on <b>closed-source</b> , <b>corporate-controlled</b> hardware and software, I’ve chosen to remove my 
+                presence from mainstream social media and actively reduce my footprint on the open internet. 
+                This isn’t panic — it’s a deliberate decision based on several recurring realities that have made 
+                online life feel <b>unsafe</b>, <b>opaque</b>, and fundamentally <b>out of my control</b>.
+                </p>
+                <h2>Proven risks of proprietary, un-auditable systems</h2>
+                <p>
+                Many of the services and devices we rely on are built on <b>proprietary code and sealed firmware</b> that 
+                <b>users can’t inspect or control</b>. That means <code>critical parts of my digital life run inside black boxes</code>:
+                Closed-source social platforms centralize huge amounts of personal data and choose how it’s stored,
+                <b>analyzed, and shared</b> — often without clear, user-friendly control.
+                Device firmware (from Wi‑Fi chips to system controllers) and proprietary OS components can include 
+                telemetry, undocumented features, or security holes that users and independent researchers can’t 
+                fully audit.
+                When a subsystem is closed and privileged, the only parties that can realistically find and fix deep 
+                problems are the vendor and a small set of researchers — <b>not the people who depend on the devices.</b>
+                That lack of auditability removes both control and trust. If I can’t verify what runs on the hardware 
+                that holds my data or mediates my communications, I don’t want to rely on it.
+                </p>
+                <h2>The Intel Management Engine and similar “always-on” subsystems</h2>
+                <p>
+                One concrete example that crystallized my decision is the family of privileged subsystems built 
+                into modern hardware — the Intel Management Engine (ME), Converged Security and Management Engine 
+                (CSME), and vendor equivalents. Key concerns:
+                These are essentially separate microcontrollers running firmware with deep access to memory, 
+                peripherals, networking, and sometimes the ability to operate while the main OS is powered down.
+                The code is proprietary and cryptographically locked to vendor-signed images, so users cannot 
+                replace or fully audit it.
+                Over the years researchers and incident responders have found serious vulnerabilities in ME/CSME 
+                and in related out‑of‑band management technologies (AMT, BMCs, etc.). Some vulnerabilities allow 
+                remote attackers or local attackers with physical access to gain highly privileged execution.
+                Real-world actors — from advanced criminal groups to state-linked operators — have shown interest 
+                in firmware and management-engine-level compromises because they’re stealthy and persist across 
+                reinstalls.
+                </p>
+                <p>
+                in simple words: owning the firmware layer means having a backdoor-level capability. Whether those 
+                subsystems were designed with hostile intent or for legitimate manageability, their presence and 
+                documented vulnerabilities make me uneasy about placing trust and personal data on platforms that 
+                depend on them.
+                </p>
+                <h2>Evidence of targeted surveillance and exploitation</h2>
+                <p>
+                <li>Large-scale leaks, disclosed vulnerabilities, and reported exploits show two things:
+                Intelligence agencies and criminal groups both pursue access to core hardware and firmware. 
+                Public reporting and forensic work have repeatedly shown attackers aiming below the OS to maintain 
+                stealth.</li>
+                <li>When privileged, proprietary subsystems are compromised, the attack surface expands dramatically — 
+                attackers can persist, tamper with logs, or exfiltrate data even if the main OS is reinstalled.
+                Those incidents aren’t hypothetical. They shifted my threat model from “someone scraping my profile”
+                to “powerful actors can observe or control my device in ways regular users can’t detect or fix.”</li>
+                </p>
+                <h2>social platforms themselves amplify risk</h2>
+                <p>
+                Even without exotic firmware attacks, mainstream social media <b>centralizes metadata, content, and 
+                social graphs</b>. Effects include:
+                </p>
+                <p>
+                Highly detailed targeting capability for advertisers, political actors, and bad actors.
+                Large-scale data collection, retention, and sharing that can be subpoenaed, leaked, or abused.
+                Automated systems and opaque moderation/algorithmic decisions that shape visibility and can expose 
+                private information unpredictably.
+                </p>
+                <p>
+                For me, the combined risk of centralized data collection plus the invisible hardware/firmware layer is unacceptable.
+                </p>
+                <h2>Practical harms I want to avoid</h2>
+                <p>
+                Permanent digital traces of sensitive conversations, relationships, and opinions.
+                Identity profiling that feeds advertising, surveillance, or coercive actions.
+                The possibility of undetectable compromise via firmware or management subsystems.
+                Being forced to rely on corporations or vendors to remediate deep technical failures.
+                </p>
+                <h2>What I’m doing instead</h2>
+                <p>
+                I removed myself from major social networks and began the following, focused on minimizing 
+                dependency on closed systems:
+                </p>
+                <p>
+                <li>Deleted or deactivated accounts on major platforms; requested data removal where possible.</li>
+                <li>Migrated essential communication to tools where I control the endpoint (end‑to‑end encrypted 
+                messengers on devices I manage) and limited metadata exposure. (eg. Matrix)</li>
+                <li>Replaced or minimized use of hardware with known un-auditable subsystems where feasible 
+                (using devices and vendors with stronger transparency, or older hardware without those features).</li>
+                <li>Hardened remaining devices: firmware/BIOS updates from trusted vendors, disabled out‑of‑band 
+                features when possible, and minimized unnecessary network services. (with LibreBoot you can disable IME)</li>
+                <li>Adopted a “need-to-know” sharing posture: fewer public profiles, less personal data published, 
+                and using throwaway contact points for nonessential services.</li>
+                <li>Shifted attention to small, federated, or self-hosted communities when I want connection (or to 
+                private, well-defined groups I trust).</li>
+                </p>
+                <h2>What I’m not claiming</h2>
+                <p>
+                Absolute safety. Removing myself from popular social media and aggressively reducing reliance on 
+                opaque hardware reduces my exposure and control loss, but no setup is perfect.
+                That every firmware concern is actively exploited against ordinary people today. 
+                Many vulnerabilities are exploited primarily in high-value operations. Still, the combination of 
+                centralized social data and privileged firmware makes the risk unacceptable to me personally.
+                </p>
+                <h2>Why this matters for others</h2>
+                <p>
+                If you value control over your digital life, consider the same trade-offs I did: the convenience of 
+                large platforms and modern hardware versus the risk of invisible, hard-to-audit systems and centralized 
+                data collection. Even small actions—reducing platform use, using privacy-respecting services, keeping 
+                devices up to date, and turning off unnecessary management features—raise the bar for attackers and reduce 
+                reliance on closed systems.
+                </p>
+                <h2>Closing</h2>
+                <p>
+                I chose to delete myself from major social media and step back from large parts of the public 
+                internet because I don’t want my life mediated by corporations I can’t audit and hardware that 
+                can be turned into an invisible spying vector. It’s a practical, precautionary move: I’m trading 
+                some convenience for more control, fewer permanent traces, and less exposure to opaque, high‑privilege 
+                layers that have repeatedly proven risky.
+                </p>
+                <p>
+                If you want to start getting more educated on why <b>OPEN-SOURCE</b> matters ; you can start
+                learning from <b>fsf organization</b> resources.
+                </p>
+                </div>
+            </article>
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>

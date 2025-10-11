@@ -2,6 +2,13 @@
 // Add your posts here in reverse chronological order (newest first)
 const posts = [
     {
+        id: 'post-4',
+        title: 'Why I’m Leaving Major Social Medias — and the SHADY part of the Internet',
+        date: '2025-10-11',
+        excerpt: '',
+        file: 'posts/Why_I_am_Leaving_Major_Social_Medias-and_the_SHADY_part_of_the_Internet.html'
+    },
+    {
         id: 'post-3',
         title: 'Beginner-friendly C++ basics guide',
         date: '2025-10-10',
