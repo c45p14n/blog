@@ -2,6 +2,13 @@
 // Add your posts here in reverse chronological order (newest first)
 const posts = [
     {
+        id: 'post-5',
+        title: 'Getting started to write simple Malicious code in C',
+        date: '2025-10-13',
+        excerpt: '',
+        file: 'posts/Getting_started_to_write_simple_Malicious_code_in_C.html'
+    },
+    {
         id: 'post-4',
         title: 'Why I’m Leaving Major Social Medias — and the SHADY part of the Internet',
         date: '2025-10-11',

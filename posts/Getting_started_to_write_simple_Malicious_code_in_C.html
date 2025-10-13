@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting started to write simple Malicious code in C | Caspian</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            <article>
+                <div class="post-header">
+                    <h1>Getting started to write simple Malicious code in C</h1>
+                    <div class="post-meta">October 13, 2025</div>
+                </div>
+                <div class="post-content">
+                <h2>NirCmd</h2> 
+                <p>
+                NirCmd is a small command-line utility that allows you to do some useful tasks in Windows OS.
+                (Since most of people use Windows OS for their personal PC ; and I am not experienced in using
+                windows APIs for now I prefer to use NirCmd.)
+                </p>
+                <p>If you are interested in NirCmd and what you can do with it ; This the link to the docs :
+                <a href="https://www.nirsoft.net/utils/nircmd.html" class="styled-link">NirCmd</a> 
+                </p>
+                <p>
+                You can download the DLL from this link : <a href="https://www.nirsoft.net/cmp/nircmd.html" class="styled-link">NirCmd DLL</a>
+                </p>
+                <p>
+                If you check NirCmd DLL file at <b>VirusTotal</b> WebSite you can see that it is considered as
+                a safe file across all Anti-Viruses
+                </p>
+                <p>
+                Altough some AntiViruses and IPS or FireWalls may detect it ; (HOW ?) NirCmd itself is flagged as a harmless code across AVs Databses 
+                However Some of (AV/IPS)s will monitor the activity of the apps instead of checking the hash or scan the codes.
+                </p>
+                <p>
+                the reason why NirCmd is not considered a harmful file is that in nature it was written to automate tasks 
+                and we exlpoit this feature to write simple malwares.
+                </p>
+                <h2>How To Load NirCmd in our C Code</h2>
+                <p>
+                As you have probably guessed most of this post will be around <b>NirCmd</b> and
+                how to use it
+                </p>
+                <pre><code>#include &lt;windows.h&gt;
+#include &lt;stdio.h&gt;
+
+typedef int (_cdec1 *function_nircmd)(char*)
+// Change the input declaration based on your need
+int main(){
+  HINSTANCE hinstLib;
+  function_nircmd nircmd;
+  BOOL fFreeResult, fRunTimeLinkSuccess = False;
+  // Get a handle to DLL Module.
+  hinstLib = LoadLibrary(TEXT("nircmd.dll"));
+  // If the handle is valid, try to get the function address.
+  if (hinstLib != NULL){
+    X = (function_nircmd) GetProcAddress(hinstLib, "DoNirCmd");
+    // if the function address is valid, call the function.
+    if (NULL != nircmd)
+    {
+      fRunTimeLinkSuccess = TRUE;
+      (nircmd) ("<b>X</b>");
+    }
+    // Free the DLL Module
+    fFreeResult = FreeLibrary(hinstLib);
+  } 
+  // If unable to call the DLL function, use an alternative.
+  if(! fRunTimeLinkSuccess)
+    printf("Error!!!");
+  return 0;
+}</code></pre>
+                <p>
+                If you pay attention a section of the code is empty on purpose ; I have marked it with <b>X</b>.
+                based on the Docs. You can replace it with the following commands:
+                </p>
+                <li>
+                <p>
+                <code>speak text ~$clipboard$</code> : Speaks the text currently in the clipboard.
+                </p>
+                <p>
+                <code>speak text \"Write Your Text here"");</code> : with this command you can speak the text 
+                surrouned in quotation mark.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>changesysvolume 0-65535</code> : Increase/Decrease the system volume by specified amount.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>mutesysvolume 1/0</code> : Mute/Unmute the system volume.
+                </p>
+                </li>
+                <p>
+                <code>mutesysvolume 2</code> : Switch the system volume between the mute and normal state.
+                </p>
+                <li>
+                <p>
+                <code>cmdshortcut "~$folder.desktop$" "Name" <code>command</code></code> : Create a shortcut on 
+                your desktop that with the given name that does the command you specify.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>monitor off/on</code> : Turn off/on the monitor.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>screensaver</code> : Start the default screen saver.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>standby</code> : Put your computer in 'standby' mode.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>exitwin poweroff force</code> : Turn off your computer (with force).
+                </p>
+                </li>
+                <p>
+                <code>exitwin reboot</code> : reboot the computer.
+                </p>
+                <p>
+                <code>qboxcom "Do you want to reboot ?" "question" exitwin reboot</code> : Ask if you want to reboot, 
+                and if you answer 'Yes', reboot the computer.
+                </p>
+                <p>
+                <code>exitwin logoff</code> : log off the current user.
+                </p>
+                <li>
+                <p>
+                <code>win trans ititle "appName" 192</code> : Make your Internet Explorer windows 75% transparent ! (192 / 256).
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>win min class "appFrame"</code> : Minimize all your specified App's windows.
+                </p>
+                </li>
+                <p>
+                <code>win close class "appFrame"</code> : Close all your specified App's windows.
+                </p>
+                <p>
+                <code>win hide class "appFrame"</code> : Hide all your App's windows.
+                </p>
+                <p>
+                <code>win show class "appFrame"</code> : Show all your App's windows
+                </p>
+                <p>
+                (to be specific in the docs. it has used <b>"IEFrame"</b> and it has said <b>InternetExplorer</b> but 
+                I assume it works for other applications as well)
+                </p>
+                <li>
+                <p>
+                <code>win close class "CabinetWClass"</code> : Close all your Explorer windows (My Computer, folders, and so on).
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>win center alltop</code> : Center all top-level windows.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>win -style title "my computer" 0x00C00000</code> : win -style title "my computer" 0x00C00000.
+                </p>
+                </li>
+                <p>
+                <code>win +style title "my computer" 0x00C00000</code> : Return the title bar of My Computer window that we removed in the previous example.
+                </p>
+                <p>
+                <code>win +exstyle title "my computer" 0x00400000</code> : Set the My Computer window to right-to-left order
+                </p>
+                <p>
+                <code>win child title "my computer" +exstyle all 0x00400000</code> : Set all child windows of My Computer window to right-to-left order 
+                </p>
+                <li>
+                <p>
+                <code>cmdshortcut " "~$folder.desktop$ "Close All IE" win close class "IEFrame"</code> : Create a shortcut on your desktop that closes all your Internet Explorer windows.
+                </p>
+                </li>
+                <p>
+                <code>cmdshortcut " "~$folder.desktop$ "Hide All IE" win hide class "IEFrame"</code> : Create a shortcut on your desktop that hides all your Internet Explorer windows. 
+                </p>
+                <p>
+                <code>cmdshortcut " "~$folder.desktop$ "Show All IE" win show class "IEFrame"</code> : Create a shortcut on your desktop that shows back all your Internet Explorer windows
+                </p>
+                <li>
+                <p>
+                <code>win settopmost title "Calculator" 1</code> : Set the Windows Calculator as top-most window (above all other windows).
+                </p>
+                </li>
+                <p>
+                <code>win settopmost title "Calculator" 0</code> : Set the Windows Calculator back to regular window (non top-most window)
+                </p>
+                <li>
+                <p>
+                <code>shortcut "f:\winnt\system32\calc.exe" "~$folder.programs$\Calculators" "Windows Calculator"</code> : Create a shortcut to Windows calculator under <b>Start Menu-&gt;Programs-&gt;Calculators</b>.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>win hide class progman</code> : Hide the desktop window.
+                </p>
+                </li>
+                <p>
+                <code>win show class progman</code> : Show the desktop window (After hiding it in previous example).
+                </p>
+                <li>
+                <p>
+                <code>win child class "Shell_TrayWnd" hide class "button"</code> : Hide the start button on the system tray
+                </p>
+                </li>
+                <p>
+                <code>win child class "Shell_TrayWnd" show class "button"</code> : Show the start button on the system tray
+                </p>
+                <p>
+                <code>win child class "Shell_TrayWnd" hide class "TrayClockWClass"</code> : Hide the clock on the system tray.
+                </p>
+                <p>
+                <code>win child class "Shell_TrayWnd" show class "TrayClockWClass"</code> : Show the clock on the system tray
+                </p>
+                <li>
+                <p>
+                <code>killprocess iexplore.exe</code> : Kill (terminate) all instance of Internet Explorer processes.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>urlshortcut "https://c45p14n.github.io/blog" "~$folder.desktop$" "Caspian's Blog"</code> : Create a shortcut to Caspian's Blog on your desktop.
+                </p>
+                </li>
+                <p>
+                <code>urlshortcut "https://c45p14n.github.io/blog" "~$folder.favorites$\Links" "Caspian's Blog"</code> : Add Caspian's Blog to your Favorities under Links folder.
+                </p>
+                <li>
+                <p>
+                <code>setdisplay 800 600 24</code> : Set the display mode to 800x600x24bit colors.
+                </p>
+                </li>
+                <p>
+                <code>cmdshortcut "~$folder.desktop$" "800x600x24" setdisplay 800 600 24</code> : Create a shortcut on the desktop that set the display mode to 800x600x24bit colors.
+                </p>
+                <li>
+                <p>
+                <code>execmd copy "~$folder.desktop$\*.lnk" f:\temp\desktop</code> : Copy all shortcuts on your desktop to another folder (f:\temp\desktop)..
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>service restart apache</code> : Restart your Apache server (under Windows NT/2000/XP/2003).
+                </p> 
+                </li>
+                <p>
+                <code>cmdshortcut "~$folder.desktop$" "Restart Apache" service restart apache</code> : Create a shortcut on your desktop that restarts the Apache server
+                </p>
+                <li>
+                <p>
+                <code>regsetval sz "HKCU\control panel\desktop" "ScreenSaveActive" 0</code> : Disable the screen saver
+                </p>
+                </li>
+                <p>
+                <code>regsetval sz "HKCU\control panel\desktop" "ScreenSaveActive" 1</code> : Enable the screen saver
+                </p>
+                <li>
+                <p>
+                <code>setfiletime "c:\temp\myfile.txt" "24-06-2003 17:57:11" "22-11-2005 10:21:56"</code> : Change the date/time of the specified filename (creation time and modified time)
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>clipboard set ~$folder.desktop$</code> : Copy your desktop folder path to the clipboard
+                </p>
+                </li>
+                <p>
+                <code>clipboard set ~$folder.start_menu$</code> : Copy your start menu folder path to the clipboard
+                </p>
+                <p>
+                <code>clipboard readfile "c:\My Files\info1.txt"</code> : Copy the content of info1.txt (simple text file) to the clipboard .
+                </p>
+                <p>
+                <code>clipboard addfile "c:\My Files\info1.txt"</code> : Add the text content of clipboard to info1.txt
+                </p>
+                <p>
+                <code>clipboard clear</code> : Clear the clipboard.
+                </p>
+                <li>
+                <p>
+                <code>paramsfile "c:\temp\folders.txt" "" "" execmd md ~$fparam.1$</code> : Create all folders specified in "c:\temp\folders.txt". The folder path names are separated by CRLF characters.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>emptybin</code> : Empty the recycle bin in all drives.
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>cmdwait 2000 savescreenshot "f:\temp\shot.png"</code> : Wait 2 seconds, and then save the current screen to shot.png
+                </p>
+                </li>
+                <p>
+                <code>loop 10 60000 savescreenshot c:\temp\scr~$currdate.MM_dd_yyyy$-~$currtime.HH_mm_ss$.png</code> : Save 10 screenshots in a loop, and wait 60 seconds between the screenshot save calls. The filenames of the screenshot will contain the time and date of the saved screenshot.
+                </p>
+                <p>
+                <code>savescreenshotfull ../img.png</code> :takes a screenshot and saves it in the previous dir and name it as img.png 
+                </p>
+                <li>
+                <p>
+                <code>waitprocess firefox.exe speak text "Firefox was closed"</code> : Wait until Firefox is closed, and then say "Firefox was closed".
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>infobox \"some text\"</code> : an infobox pops-op and you can send a text through it .
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>trayballoon \"Title\" \"Text\" \"shell32.dll,27\" 10000</code>
+                </p>
+                </li>
+                <li>
+                <p>
+                <code>setcursor -100 -200</code> : Sets the curosor in the specified(x,y) location
+                </p>
+                </li>
+                <p>
+                <code>movecursor -100 -200</code> : Moves the curosor in the specified(x,y) location
+                </p>
+                <p>
+                <code>sendmouse left/right/middle click</code>
+                </p>
+                <li>
+                <p>
+                <code> sendkeypress K E Y E S</code> : This one is by far my most fav. one ; becuase you can control anything you want with it. 
+                run a reverseshell or create a backdoor. possibilities are endless ; but keep in mind that some of AV/IPS will detect you unusual
+                behavior .
+                </p>
+                </li>
+                <h2>The moment of realization</h2>
+                <p>
+                I bet just by reading the commands that you can run ; you realised that how easy it is to troll your friends with few lines of code .
+                Don't use them just on their own ; have some creativity and combine them together then you will realize the power of this script. 
+                </p>
+                <p>
+                If you are really a programmer and not just a skid. you know how to combine these with your coding experties. Have Fun!
+                </p>
+                </div>
+            </article>
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>
