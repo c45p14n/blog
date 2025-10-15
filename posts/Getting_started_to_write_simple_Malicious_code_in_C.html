@@ -64,7 +64,7 @@ int main(){
   hinstLib = LoadLibrary(TEXT("nircmd.dll"));
   // If the handle is valid, try to get the function address.
   if (hinstLib != NULL){
-    X = (function_nircmd) GetProcAddress(hinstLib, "DoNirCmd");
+    X = (function_nircmd) GetProcAddress(hinstLib, "DoNirCmd"
     // if the function address is valid, call the function.
     if (NULL != nircmd)
     {
