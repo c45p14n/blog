@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouth of Sauron - How to use ESP32-CAM | Caspian</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            <article>
+                <div class="post-header">
+                    <h1>Mouth of Sauron - How to use ESP32-CAM</h1>
+                    <div class="post-meta">October 15, 2025</div>
+                </div>
+                <div class="post-content">
+                <p>
+                This started as a university project — a simple assignment to make a <b>"networked sensor"</b> — 
+                and somehow turned into a tiny clandestine camera that fits in the palm of my hand.
+                I used the <em>esp32-cam-webserver</em> (an expanded version of Espressif's CameraWebServer) 
+                as the base for everything: wiring, web UI and streaming. The example I used is the 
+                <a href="https://github.com/easytarget/esp32-cam-webserver/tree/master" class="styled-link">easytarget/esp32-cam-webserver</a> project.
+                </p>
+                <p>
+                If you're new: the ESP32-CAM modules combine a microcontroller, a camera sensor (<b>OV2640</b> in many case) 
+                and a few pins exposed for programming and control.  (I used a Dev-Board beacuase I couldn't trust my friends to not fry the board)
+                </p>
+                <p>
+                For my build I used:
+                </p>
+                <ul>
+                <li>ESP32-CAM module (with OV2640)</li>
+                <li>Dev-Board with MicroUSB port (for uploading the sketch)</li>
+                <li>Well-powered supply that can supply a steady 5V (or 3.3V through <b>a regulator</b>) — the camera is picky about power</li>
+                </ul>
+                <h2>Hardwares Demonstration</h2>
+                <img src="../imgs/ESP32-CAM-Board.jpg" alt="ESP32-CAM" width="300" height="330">
+                <img src="../imgs/ESP32-CAM-Mounted-on-DevBoard.jpg" width="300" height="330">
+                <img src="../imgs/ESP32-CAM-DevBoard.jpg" width="300" height="330">
+                <h2>Flashing the firmware (The Easy way)</h2>
+                <p>
+                I used the Arduino IDE to compile and flash the sketch from the repo. The sketch exposes 
+                a small web server — you power the board, the serial prints an IP, and visiting that IP in 
+                a browser gives you a live <code>MJPEG</code> stream and control pages.
+                The repo already has the web UI and helpers; you can tweak resolution, flip the image, and enable 
+                OTA updates for more advanced workflows.
+                </p>
+                <h2>Board & IDE settings</h2>
+                <ol>
+                <li>Install the ESP32 board support in Arduino IDE (search "esp32 by Espressif Systems" in Boards Manager).</li>
+                <li>In <strong>Tools &gt; Board</strong> choose <em>AI Thinker ESP32-CAM</em> (or the board matching your module).</li>
+                <li>Select the correct COM port, hit Upload. If upload hangs, ensure GPIO0 is grounded and press RESET when the uploader output shows the initial boot message.</li>
+                </ol>
+                <h2>Configure the sketch</h2>
+                <p>
+                Open <code>myconfig.sample.h</code> in the repo, copy it to <code>myconfig.h</code>, then set:
+                </p>
+                <ul>
+                <li>Enable <code>AP Mode</code> or your Hotspot won't be enabled for you to connect</li>
+                <li><code>WIFI_SSID</code> and <code>WIFI_PASSWORD</code></li>
+                <li>Camera model if asked (OV2640 is common for AI-Thinker)</li>
+                <li>Any stream or webserver options you want</li>
+                </ul>
+                <p>
+                Then recompile and upload. Once the sketch boots, the serial monitor (115200 baud) will often print the IP address assigned by your router — type that in a browser on the same network to view the web UI or stream.
+                </p>
+                <h2>From class demo to multi-use gadget</h2>
+                <p>
+                What began as a graded assignment quickly became a tool for experiments. I used it to:
+                </p>
+                <ol>
+                <li>Monitor my room (time-lapse snapshots)</li>
+                <li>Quickly prototype visual detection ideas on a laptop via HTTP snapshots</li>
+                <li>Learn about supply-stability: short power cables and a stable 5V made the difference between smooth streaming and constant reconnects</li>
+                </ol>
+                <h2>Making it a spy gadget (the fun, low-effort tweaks)</h2>
+                <p>
+                Once the camera is stable on your network, you can add small touches :
+                </p>
+                <ul>
+                <li>Hide the module inside a small project box and poke just the lens through a tiny hole.</li>
+                <li>Use the web UI to set low resolution for longer battery life and more discreet streaming.</li>
+                <li>Mount it like a dummy alarm sensor or tuck it behind a fake book — remember to obey laws and ethics: never record people where they expect privacy.</li>
+                </ul>
+                <h2>Advanced ideas (when you're ready)</h2>
+                <p>
+                If you want to go beyond the basic sketch:
+                </p>
+                <ul>
+                <li>plug out the Dev-Board and mount a chargable battery in the back of your board to work without being plugged to a PC & be able to hide it in better spots.</li>
+                <li>Look for actively maintained ESP32 webcam projects (newer cores and libraries) if you need modern compatibility.</li>
+                <li>Add microSD logging (some modules support it) for local snapshots.</li>
+                <li>Integrate with Home Assistant or a small MQTT bridge for event-based imaging.</li>
+                </ul>
+                <h2>Final notes</h2>
+                <p>
+                This project turned a classroom exercise into a versatile little device. If you follow the repo's instructions for wiring, programming, and the provided web server, you can have a camera on your network in an evening.
+                Tinker and learn.
+                </p>
+                </div>
+            </article>
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>

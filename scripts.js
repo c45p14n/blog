@@ -2,6 +2,13 @@
 // Add your posts here in reverse chronological order (newest first)
 const posts = [
     {
+        id: 'post-6',
+        title: 'Mouth of Sauron - How to use ESP32-CAM',
+        date: '2025-10-15',
+        excerpt: '',
+        file: 'posts/Mouth_of_Sauron - How_to_use_ESP32-CAM.html'
+    },
+    {
         id: 'post-5',
         title: 'Getting started to write simple Malicious code in C',
         date: '2025-10-13',
