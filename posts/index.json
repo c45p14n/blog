@@ -1,0 +1,44 @@
+[
+    {
+        "title": "Mouth of Sauron - How to use ESP32-CAM",
+        "date": "2025-10-15",
+        "excerpt": "",
+        "file": "posts/Mouth_of_Sauron - How_to_use_ESP32-CAM.html",
+        "tags": ["programming", "IOT", "project"]
+    },
+    {
+        "title": "Getting to started to write simple Malicious Code in C",
+        "date": "2025-10-13",
+        "excerpt": "",
+        "file": "posts/Getting_started_to_write_simple_Malicious_code_in_C.html",
+        "tags": ["programming", "malware", "C", "course"]
+    },
+    {
+        "title": "Why I'm Leaving Major Social Medias - and the SHADY part of the internet",
+        "date": "2025-10-11",
+        "excerpt": "",
+        "file": "posts/Why_I_am_Leaving_Major_Social_Medias-and_the_SHADY_part_of_the_Internet.html",
+        "tags": ["thoughts", "rights"]
+    },
+    {
+        "title": "Beginner-friendly C++ basics guide",
+        "date": "2025-10-10",
+        "excerpt": "",
+        "file": "posts/Beginner-friendly_C++_basics_guide.html",
+        "tags": ["programming", "C++", "course"]
+    },
+    {
+        "title": "Tame Your GIT: Cleaner History, Painless Merges",
+        "date": "2025-10-07",
+        "excerpt": "",
+        "file": "posts/TameYourGit.html",
+        "tags": ["programming", "tools", "course"]
+    },
+    {
+        "title": "Welcome to My Digital Space",
+        "date": "2025-10-07",
+        "excerpt": "",
+        "file": "posts/post-1.html",
+        "tags": ["thoughts"]
+    }
+]
