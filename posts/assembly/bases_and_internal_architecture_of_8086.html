@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bases and internal architecture of 8086 | Caspian</title>
+    <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../assembly.html" class="back-link">← Back to Assembly Topics</a>
+            <article>
+                <div class="post-header">
+                    <h1>Bases and internal architecture of 8086</h1>
+                    <div class="post-meta">October 19, 2025</div>
+                </div>
+                <div class="post-content">
+                <pre><table>
+                    <caption>Convert 25<sub>10</sub> to Binary</caption>
+                    <thead>
+                      <tr>
+                        <th>Num</th>
+                        <th>Quotient</th>
+                        <th>Remainder</th>
+                        <th>Note</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>25/2</td>
+                        <td>12</td>
+                        <td>1</td>
+                        <td>LSB (Least Significant Bit)</td>
+                      </tr>
+                      <tr>
+                        <td>12/2</td>
+                        <td>6</td>
+                        <td>0</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>6/2</td>
+                        <td>3</td>
+                        <td>0</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>3/2</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>1/2</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>MSB (Most Significant Bit)</td>
+                      </tr>
+                    </tbody>
+                </table></pre> 
+                <p>
+                <b>Therefore : </b><code> 25<sub>10</sub> = 11001<sub>2</sub></code>
+                </p>
+                <h3>Another Sol :</h3>
+                <p>Convert 39<sub>10</sub> to binary</p>
+                <p><code>32 + 0 + 0 + 4 + 2 + 1 = 39</code></p>
+                <p><b>Therefore : </b><code>39<sub>10</sub> = 100111<sub>2</sub></p></code>
+                <br>
+                <pre><table>
+                    <caption>Convert 11001<sub>2</sub> to Decimal</caption>
+                    <tbody>
+                      <tr>
+                        <th>Weight :</th>
+                        <td>2<sup>4</sup></td>
+                        <td>2<sup>3</sup></td>
+                        <td>2<sup>2</sup></td>
+                        <td>2<sup>1</sup></td>
+                        <td>2<sup>0</sup></td>
+                      </tr>
+                      <tr>
+                        <th>Digits :</th>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                      </tr>
+                      <tr>
+                        <th>Sum :</th>
+                        <td>16</td>
+                        <td>8</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>= 25<sub>10</sub></td>
+                      </tr>
+                    </tbody>
+                </table></pre>
+                <br>
+                <hr> 
+                <br>
+                <h3>Base 16</h3>
+                <pre><table>
+                <caption>Base 16</caption>
+                <thead>
+                <tr>
+                  <th>Decimal</th>
+                  <th>Binary</th>
+                  <th>Hex</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>0</td>
+                  <td>0000</td>
+                  <td>0</td>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>0001</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>0010</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>0011</td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>0100</td>
+                  <td>4</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>0101</td>
+                  <td>5</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>0110</td>
+                  <td>6</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>0111</td>
+                  <td>7</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>1000</td>
+                  <td>8</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td>1001</td>
+                  <td>9</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>1010</td>
+                  <td>A</td>
+                </tr>
+                <tr>
+                  <td>11</td>
+                  <td>1011</td>
+                  <td>B</td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>1100</td>
+                  <td>C</td>
+                </tr>
+                <tr>
+                  <td>13</td>
+                  <td>1101</td>
+                  <td>D</td>
+                </tr>
+                <tr>
+                  <td>14</td>
+                  <td>1110</td>
+                  <td>E</td>
+                </tr>
+                <tr>
+                  <td>15</td>
+                  <td>1111</td>
+                  <td>F</td>
+                </tr>
+                </tbody>
+                </table></pre>
+                <br>
+                <h3>Examples</h3>
+                <pre><table>
+                <caption>Represent 100111110101 in HEX</caption>
+                <tr>
+                  <th>Binary</th>
+                  <td>1001</td>
+                  <td>1111</td>
+                  <td>0101</td>
+                </tr>
+                <tr>
+                  <th>HEX</th>
+                  <td>9</td>
+                  <td>F</td>
+                  <td>5</td>
+                </tr>
+                </table></pre>
+                <br>
+                <pre><table>
+                <caption>Convert HEX 29B to Binary</caption>
+                <tr>
+                  <th>HEX</th>
+                  <td>2</td>
+                  <td>9</td>
+                  <td>B</td>
+                </tr>
+                <tr>
+                  <th>Binary</th>
+                  <td>0010</td>
+                  <td>1001</td>
+                  <td>1011</td>
+                </tr>
+                </table></pre>
+                <br>
+                <pre><table>
+                <caption>Convert 45<sub>10</sub> to HEX</caption>
+                <tr>
+                  <td>32</td>
+                  <td>16</td>
+                  <td>8</td>
+                  <td>4</td>
+                  <td>2</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>0</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>0</td>
+                  <td>1</td>
+                  <td>32+8+4+1=45</td>
+                </tr>
+                </table></pre>
+                <br>
+                <p><code> => 45<sub>10</sub> = 0010 1101 <sub>2</sub> = 2D<sub>16</sub></code></p>
+                <br>
+                <pre><table>
+                <caption>Convert 629<sub>10</sub> to HEX</caption>
+                <tr>
+                  <th>Decimal</th>
+                  <td>512</td>
+                  <td>256</td>
+                  <td>128</td>
+                  <td>64</td>
+                  <td>32</td>
+                  <td>16</td>
+                  <td>8</td>
+                  <td>4</td>
+                  <td>2</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <th>Binary</th>
+                  <td>1</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>0</td>
+                  <td>1</td>
+                  <td>0</td>
+                  <td>1</td>
+                </tr>
+                </table></pre>
+                <br>
+                <p><code>=> 629<sub>10</sub> = 512+64+32+16+4+1 = 0010 0111 0101<sub>2</sub> = 275<sub>16</sub></code></p>
+                <br>
+                <pre><table>
+                <caption>Convert 6B2<sub>16</sub> to Decimal</caption>
+                <tr>
+                  <th>Decimal</th>
+                  <td>1024</td>
+                  <td>512</td>
+                  <td>256</td>
+                  <td>128</td>
+                  <td>64</td>
+                  <td>32</td>
+                  <td>16</td>
+                  <td>8</td>
+                  <td>4</td>
+                  <td>2</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <th>Binary</th>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>0</td>
+                  <td>1</td>
+                  <td>0</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>1</td>
+                  <td>0</td>
+                </tr>
+                </table></pre>
+                <br>
+                <p><code>=> 1024+512+128+32+16+2 = 1714<sub>10</sub></code></p>
+                <br>
+                <p>Perform HEX addition : 23D9<sub>16</sub> + 94BE<sub>16</sub></p>
+                <pre>  23D9  LSD : 9 + 14(E) = 23              23 - 16 = 7 w/carry
++ 94BE        1 + 13(D) + 11(B) = 25      25 - 16 = 9 w/carry
+  ----        1 + 3 + 4 = 8
+  B897  MSD : 2 + 9 = B</pre>
+                <br>
+                <p>Perform HEX substraction : 59F - 2B8</p>
+                <pre>  59F   LSD : 15 - 8 = 7
+- 2B8         9 + 16 - 11 = 14 = E<sub>16</sub>
+  ---         5 - 1 - 2 = 2
+  2E7</pre>
+                <br>
+                <hr>
+                <br>
+                <h2>Inside a Computer</h2>
+                <pre><img src="../../imgs/Inside_a_Computer.png" width="600"></pre>
+
+                <p><b>We have control bus too which I didn't include in the represantation</b></p>
+
+                <h3>CPU (Central Processing Unit)</h3>
+                <p>
+                The <b>“brain”</b> of the computer.
+                It performs all the <b>calculations</b>, <b>logical operations</b>, and <b>controls the flow of data</b> between memory and peripherals.
+                Made up of the <b>ALU (Arithmetic Logic Unit)</b>, <b>Control Unit</b>, and <b>Registers</b>.
+                </p>
+
+                <h3>Memory (RAM & ROM)</h3>
+                <p>
+                <b>RAM (Random Access Memory)</b> : Temporary storage used while the computer is running.
+                </p>
+                <p>
+                <b>ROM (Read Only Memory)</b> : Permanent storage that holds instructions for startup and basic functions.
+                The CPU reads and writes data here while processing.
+                </p>
+
+                <h3>Peripherals</h3>
+                <p>
+                External or internal devices connected to the computer system.
+                Examples: Monitor, Printer, Keyboard, Mouse, Storage Devices, etc.
+                <b>Used for input, output, and storage operations.</b>
+                </p>
+
+                <h3>Address Bus</h3>
+                <p>
+                Carries the address (location) of where data should be read from or written to.
+                It flows one way — from CPU to Memory or Peripherals.
+                </p>
+
+                <h3>Data Bus (8 (Old Computers) - 64 (Newer Computers)</h3>
+                <p>
+                Carries the actual data between the CPU, Memory, and Peripherals.
+                It’s bi-directional — data can move both to and from the CPU.
+                </p>
+
+                <h2>Internal organization of a computer</h2>
+                <pre><img src="../../imgs/Internal_organization_of_a_computer.png" width="600"></pre>
+                <h2>Internal Block Diagram of a CPU</h2>
+                <pre><image src="../../imgs/Internal_Block_Diagram_of_a_CPU.png" width="600"></image></pre>
+                <h2>CISC vs. RISC</h2>
+                <h3>CISC</h3>
+                <p>
+                Complex Instruction Set Computer (CISC) : Older, Used before <b>1980</b>.
+                </p>
+                <ul>
+                <li>Many different instructions with many different formats</li> 
+                <li>But, only small subset encountered with Linux Programming</li>
+                </ul>
+                <h3>RISC</h3>
+                <p>
+                Reduced Instruction Set Computers (RISC) : Although the philosophy of RISC was discussed back in the 70's
+                The Chip itself wasn't made untl 1980 , By <b>Intel</b> ! 
+                </p>
+                <h2>80x86 Microprocessor</h2>
+                <h3>Intel 8086 (1978)</h3>
+                <ol>
+                  <li>1 MB addressable RAM</li>
+                  <li>16-bit registers</li>
+                  <li>16-bit data bus</li>
+                </ol>
+                <h3>Intel 8088 (1979)</h3>
+                <ol>
+                  <li>1 MB addressable RAM</li>
+                  <li>16-bit registers</li>
+                  <li>8-bit bus data</li>
+                </ol>
+                <h3>Intel 80286 (1982)</h3>
+                <ol>
+                  <li>16 MB addressable RAM</li>
+                  <li>protected memory</li>
+                  <li>introduced IDE bus architecture</li>
+                  <li>Up tp 20MHz (Some books says 16MHz)</li>
+                </ol>
+                <h3>Intel 386 (1985)</h3>
+                <ol>
+                  <li>4 GB addressable RAM</li>
+                  <li>32-bit registers</li>
+                  <li>paging (virtual memory)</li>
+                  <li>Up to 33MHz</li>
+                </ol>
+                <h3>Intel 486 (1989)</h3>
+                <ol>
+                  <li>instruction pipelining</li>
+                  <li>8k cache</li>
+                </ol>
+                <h3>Pentium (1982)</h3>
+                <h3>Pentium Pro (1995)</h3>
+                <h3>Pentium II (1997)</h3>
+                <h3>Pentium III (1999)</h3>
+                <h3>Pentium 4 (2000)</h3>
+                <h3>Pentium D (2005, Dual Core)</h3>
+                <br>
+                <p>and the rest is history ; if you are interested in capabilities of these CPUs you can find more on <b>Wikipedia</b>.</p>
+
+                <h2>Inside 8086</h2>
+                <pre><img src="../../imgs/Inside_8086.png" width="600"></pre>
+                <img src="../../imgs/Inside_8086_H_1.png" width="300">
+                <img src="../../imgs/Inside_8086_H_2.png" width="300">
+                <br>
+                <p>
+                <b>The 8086 CPU is split into two cooperating units:</b>
+                </p>
+                <p>
+                <b>Execution Unit (EU)</b> — decodes and executes instructions, contains registers, the ALU, flags and operand buffers.
+                <br>
+                <b>Bus Interface Unit (BIU)</b> — handles all external memory and I/O bus activity, generates physical addresses (segment:offset), 
+                and prefetches instructions into the instruction queue.
+                <br>
+                This split allows a simple form of pipelining: while the EU executes an instruction, the BIU can fetch the next instruction bytes from memory.
+                </p>
+                <h3>Execution Unit</h3>
+                <p>
+                <b>General-purpose registers (shown: AH/AL, BH/BL, CH/CL, DH/DL) : </b>
+                <br>
+                Each of <b>AX, BX, CX, DX</b> is a <b>16-bit</b> register that can also be accessed as two 8-bit halves:
+                <br>
+                AX = AH (high byte) : AL (low byte)
+                <br>
+                BX = BH : BL, etc.
+                <br>
+                <b>Typical roles:</b>
+                <br>
+                <b>AX</b> often used implicitly by many instructions (e.g., MUL, DIV, IN, OUT).
+                <br>
+                <b>BX</b> often used as a base register for memory addressing.
+                <br>
+                <b>CX</b> commonly used as a counter for string/loop/shift instructions (e.g., LOOP, REP).
+                <br>
+                <b>DX</b> used for I/O port addresses or high-half of multiplication/division results.
+                <br>
+                <b>Width: each full register is 16 bits; AH/AL are 8 bits.</b>
+                </p>
+                <p>
+                <b>Other 16-bit registers (BP, DI, SI, SP) — purpose & use : </b>
+                <br>
+                <b>BP (Base Pointer):</b> normally used to access stack-based variables (with SS segment). Example: MOV AX, [BP+4] accesses a function parameter.
+                <br>
+                <b>SI (Source Index) and DI (Destination Index):</b> used for string and block operations (e.g., MOVS, CMPS). They can be used with DS or ES segments depending on the instruction.
+                <br>
+                <b>SP (Stack Pointer) — highlighted in the image:</b> points to the top of the stack (offset within the SS segment). It changes with PUSH, POP, CALL, RET. SP is internal to the EU for stack operations; actual memory access still goes through the BIU.
+                </p>
+                <p>
+                <b>Operands : </b>
+                <br>
+                This box represents the operand fetch/decode and temporary buffering inside the EU.
+                <br>
+                The EU decodes the instruction bytes (provided by the BIU via the instruction queue), determines what operands it needs, fetches them from registers or requests memory data (if the operand is in memory).
+                <br>
+                The operands buffer holds the values that will be fed to the ALU. It enables the ALU to operate while BIU continues fetching the next instructions.
+                </p>
+                <p>
+                <b>ALU (Arithmetic Logic Unit) : </b>
+                <br>
+                Performs arithmetic (ADD, SUB, MUL, DIV), logical (AND, OR, XOR, NOT), and bit-shift/rotate operations.
+                <br>
+                16-bit ALU on the 8086 (also supports 8-bit ops using the low/high bytes).
+                <br>
+                Takes inputs from the operands buffer and produces results sent back to registers or memory.
+                <br>
+                Example: ADD AX, BX — ALU adds 16-bit contents of AX and BX and writes result to AX.
+                </p>
+                <p>
+                <b>Flags : </b>
+                <br>
+                The ALU updates the flag register (also called the status register) to reflect results. These flags affect conditional branches and string operations.
+                <br>
+                <b>CF (Carry Flag)</b> — set on unsigned overflow (bit 0).
+                <br>
+                <b>PF (Parity Flag)</b> — set if result has even parity.
+                <br>
+                <b>AF (Auxiliary Carry)</b> — used for BCD arithmetic (half-carry).
+                <br>
+                <b>ZF (Zero Flag)</b> — set if result is zero.
+                <br>
+                <b>SF (Sign Flag)</b> — reflects the MSB of the result (negative if set for signed numbers).
+                <br>
+                <b>TF (Trap Flag)</b> — single-step debugging.
+                <br>
+                <b>IF (Interrupt Flag)</b> — enables/disables maskable interrupts.
+                <br>
+                <b>DF (Direction Flag)</b> — controls string operation direction (increment/decrement SI/DI).
+                <br>
+                <b>OF (Overflow Flag)</b> — set on signed overflow.
+                </p>
+                <h3>Bus Interface Unit</h3>
+                <b>Segment registers (stack of boxes: CS, ES, SS, DS, IP shown)</b>
+                <p>
+                8086 uses segment registers to build 20-bit physical addresses from 16-bit segment + 16-bit offset:
+                <br>
+                Common segment registers: CS (Code Segment), DS (Data Segment), SS (Stack Segment), ES (Extra Segment).
+                <br>
+                IP (Instruction Pointer): holds the offset of the next instruction within the code segment (CS:IP forms the logical pointer to code).
+                <br>
+                Physical address is computed as: physical = (segment &lt;&lt; 4) + offset (i.e., segment * 16 + offset).
+                <br>
+                Example: CS = 0x1234, IP = 0x0010 → physical address = 0x12340 + 0x0010 = 0x12350.
+                </p>
+                <b>Address generation & bus control : </b>
+                <p>
+                This block calculates physical addresses (using the segment register and offset registers like IP, SP, BP, SI, DI, or displacement values) and generates the necessary control signals for memory or I/O accesses.
+                <br>
+                Responsible for asserting read/write signals, memory/IO selection, address latch enable, etc.
+                <br>
+                Coordinates timing and bus cycles so data can be read from/written to memory or I/O devices.
+                </p>
+                <b>Instruction queue : </b>
+                <p>
+                Also called the prefetch queue or instruction queue. On the 8086 it holds up to 6 bytes of prefetched instruction code.
+                <br>
+                The BIU fetches bytes from memory and places them into this queue while the EU consumes them for decoding/execution.
+                <br>
+                This is the heart of the 8086’s simple pipeline: the BIU is fetching future instruction bytes while the EU executes the current instruction, improving throughput.
+                <br>
+                When the EU executes a control transfer (jump, call, return, interrupt) that changes CS:IP, the prefetch queue is flushed and refilled, because sequential fetch no longer applies.
+                </p>
+                <b>BIU &lt;-&gt; external bus : </b>
+                <p>
+                The BIU actually drives the address bus, data bus, and control signals to the outside world (memory chips, I/O devices).
+                <br>
+                External buses include address lines A0–A19, data lines D0–D15, and control signals (RD, WR, M/IO, ALE, etc.) — these are simplified in the diagram as the external interface on the far right/left.
+                <br>
+                The BIU takes requests from the Address Generation block and performs the physical read/write operations to memory or I/O.
+                </p>
+                <h3>How things interact</h3>
+                <b>Instruction fetch (BIU -&gt; EU) : </b>
+                <ul>
+                  <li>BIU reads instruction bytes from memory (using CS:IP for code fetch) and pushes them into the instruction queue.</li>
+                  <li>Arrow from Instruction queue to the EU (thin blue arrow) supplies bytes to be decoded.
+                </ul>
+                <b>Decode & operand fetch (EU)</b>
+                <ul>
+                  <li>EU pulls instruction bytes from the queue, decodes them, determines operand sources (register, memory).</li>
+                  <li>If operand resides in memory, EU issues a request to BIU (via the bus) to fetch the operand data; BIU returns data on the external bus.</li>
+                </ul>
+                <b>Execute (EU)</b>
+                <ul>
+                  <li>Operands are placed into the Operands buffer (green), fed to the ALU, and the operation executes.</li>
+                  <li>ALU outputs results and updates Flags; results are written back to registers or memory (again, memory writes go through the BIU).</li>
+                </ul>
+                <b>Stack operations & SP</b>
+                <ul>
+                <li>SP is updated in the EU when PUSH/POP or call/return occur. Actual memory writes/reads for stack access are done by the BIU using the SS:SP address computed in the Address generation block.</li>
+                </ul>
+                <b>Pipelining</b>
+                <ul>
+                <li>While EU executes, BIU continues filling the queue (unless a flow change happens). This concurrency is what makes the EU and BIU separation beneficial.</li>
+                </ul>
+                <h2>Registers</h2>
+                <pre><image src="../../imgs/Registers.png" width="600"></image></pre>
+                <p>
+                <b>AX = 0011000000111001</b>
+                <br>
+                AH = 00110000
+                <br>
+                AL = 00111001
+                </p>
+                <h2>Registers of a piece</h2>
+                <pre><image src="../../imgs/Registers_of_a_piece.png" width="300"></image></pre>
+                <br>
+                <p>
+                <b>CS</b> - Points at the segment containing the current Program.
+                <br>
+                <b>DS</b> - generally points at segment where variables are defined.
+                <br>
+                <b>SS</b> - points at the segment containing the stack.
+                <br>
+                <b>ES</b> - extra segment register, it's up to a coder to define its usage.
+                </p>
+                <p>
+                these 64KB segments are a continues part of memory that holds the address pointing to the
+                specifed segment.
+                </p>
+                <br>
+                <h2>Memory Segmentation Concept</h2>
+                <pre><image src="../../imgs/Memory_Segmentation_Concept.png" width="400"></image></pre>
+                <p>
+                The Intel 8086 CPU uses segmented memory addressing to access its 1 MB (1,048,576 bytes) address space.
+                <br>
+                Each memory address is defined by two parts:
+                <br>
+                <b>Segment</b> : Stored in a segment register <b>(CS, DS, SS, or ES)</b>
+                <br>
+                <b>Offset</b> : Stored in an index or pointer register <b>(BX, SI, DI, BP, or SP)</b>
+                <br>
+                <b>logical to Physical address Conversation</b>
+                <br>
+                <code>Segment : Offset</code>
+                <br>
+                <b>To calculate the physical address, the CPU performs this operation:</b>
+                <br>
+                This effectively shifts the segment value left by 4 bits (i.e., multiplies by 16) and then adds the offset.
+                </p>
+                <pre><code>Physical Address = (Segment×16)+Offset</code></pre>
+                <h2>Physical Address</h2>
+                <pre>DS = 1234
+SI = 7890    1234:7890
+
+Physical Address :
+1234 * 10h + 7890 = 19BD0
+<hr>
+DS = 1230        12300
+SI = 0045      +  0045
+                 -----
+                 12345
+
+Physcial Address = 12345<sub>16</sub></pre>
+                <h2>Flag Registers</h2>
+                <p>Determines the current state of the program</p>
+                <pre><image src="../../imgs/Flag_Registers.png" width="300"></image></pre>
+                <pre><table>
+                <caption>Flag Meanings</caption>
+                <head>
+                <tr> 
+                  <th>Flag Name</th>
+                  <th>Bit Position</th>
+                  <th>Purpose</th>
+                </tr>
+                </head>
+                <body>
+                <tr>
+                    <td>Overflow (OF)</td>
+                    <td>Bit 11</td>
+                    <td>Indicates arithmetic overflow</td>
+                </tr>
+                <tr>
+                    <td>Direction (DF)</td>
+                    <td>Bit 10</td>
+                    <td>Controls operations; 0 = increment , 1 = decrement</td>
+                </tr>
+                <tr>
+                    <td>Interrupt</td>
+                    <td>Bit 9</td>
+                    <td>Enables/Disables interupts; 1 = interupts enabled</td>
+                </tr>
+                <tr>
+                    <td>Trace (TF)</td>
+                    <td>Bit 8</td>
+                    <td>Enables single-step mode for debugging.</td>
+                </tr>
+                <tr>
+                    <td>Sign (SF)</td>
+                    <td>Bit 7</td>
+                    <td>Set if result of operation is negative (most significant bit = 1).</td>
+                </tr>
+                <tr>
+                    <td>Zero (ZF)</td>
+                    <td>Bit 6</td>
+                    <td>Set if result of operation is zero.</td>
+                </tr>
+                <tr>
+                    <td>Auxiliary Carry (AF)</td>
+                    <td>Bit 4</td>
+                    <td>Set if carry occurs between bit 3 and bit 4 (used in BCD arithmetic).</td>
+                </tr>
+                <tr>
+                    <td>Parity (PF)</td>
+                    <td>Bit 2</td>
+                    <td>Set if the number of 1 bits in the result is even.</td>
+                </tr>
+                <tr>
+                    <td>Carry (CF)</td>
+                    <td>Bit 0</td>
+                    <td>Set if there is a carry out or borrow into the most significant bit.</td>
+                </tr>
+                </body>
+                </table></pre>
+                <h3>Example</h3>
+                <pre>  1001 1100    CF = 1
++ 0110 0100    PF = 1
+  ---------    AF = 1
+  0000 0000    ZF = 1
+               SF = 1</pre>
+                <pre>  FFFFh  +            SF = 1
+  FFFFh               PF = 0
+  -----               ZF = 0
+1 FFFEh               CF = 1
+
+1111 1111 1111 1110</pre>
+                <h2>32-bit Registers</h2>
+                <pre><b>EAX</b>    <b>EBP</b>
+<b>EBX</b>    <b>ESP</b>
+<b>ECX</b>    <b>ESI</b>
+<b>EDX</b>    <b>EDI</b>
+
+<b>EFLAGS</b>
+<b>EIP</b></pre>
+                <h2>pipelined vs. non-pipelined</h2>
+                <pre><image src="../../imgs/pipelined_vs_nonepipelined.png" width="450"></image></pre>
+                <h3>Non-pipelined execution</h3>
+                <ul>
+                  <li>Each instruction is executed sequentially.</li>
+                  <li>The processor fetches an instruction from memory, then executes it completely before fetching the next instruction.</li>
+                  <li>The CPU is doing only one operation at a time.</li>
+                  <li>This means while instruction 1 is being executed, the CPU is idle in terms of fetching the next instruction.</li>
+                  <li>As a result, instruction throughput is lower.</li>
+                </ul>
+                <h3>Pipelined execution</h3>
+                <ol>
+                  <li><b>Fetch stage</b> (done by the Bus Interface Unit)</li>
+                  <li><b>Execution stage</b> (done by the Execution Unit)</li>
+                </ol>
+                <br>
+                <ul>
+                  <li>While instruction 1 is being executed, instruction 2 is being fetched simultaneously.</li>
+                  <li>This overlap of operations allows the CPU to begin executing a new instruction every cycle after the pipeline is full.</li>
+                  <li>The result is improved performance and higher instruction throughput.</li>
+                </ul>
+                <h2>Basic flow of instruction execution</h2>
+                <p>
+                This image illustrates the basic flow of instruction execution in a von Neumann–style CPU architecture, 
+                showing how instructions are <b>fetched, decoded, and executed.</b>
+                </p>
+                <pre><image src="../../imgs/Execution_of_a_command_cycle.png" width="450"></image></pre>
+                <h3>Components</h3>
+                <ul>
+                  <li><b>PC (Program Counter)</b>: Holds the address of the next instruction to fetch from memory.</li>
+                  <li><b>Memory</b>: Stores both the program instructions and data operands.</li>
+                  <li><b>Instruction Register (IR)</b>: Temporarily holds the current instruction being executed.</li>
+                  <li><b>Registers</b>: High-speed storage locations inside the CPU used for holding intermediate data and operands.</li>
+                  <li><b>ALU (Arithmetic Logic Unit)</b>: Performs arithmetic and logical operations.</li>
+                  <li><b>Flags</b>: Store the status of the last ALU operation (e.g., zero, carry, sign, overflow).</li>
+                </ul>
+                <h3>Instruction Cycle</h3>
+                <p>
+                <b>(a) Fetch</b> 
+                <ul>
+                  <li>The PC points to the next instruction.</li>
+                  <li>The instruction is fetched from memory into the Instruction Register (IR).</li>
+                  <li>The PC is then incremented to point to the next instruction.</li>
+                </ul>
+                <br>
+                <b>(b) Decode</b>
+                <ul>
+                  <li>The control unit decodes the instruction held in the IR.</li>
+                  <li>This step identifies what kind of operation it is (e.g., ADD, SUB, MOV) and 
+                  what operands are needed (registers or memory).</li>
+                </ul>
+                <br>
+                <b>(c) Execute</b>
+                <ul>
+                  <li>The operands are read from registers or memory.</li>
+                  <li>They are passed to the ALU, which performs the required operation (addition, subtraction, etc.).</li>
+                  <li>The result is stored back into a register or memory.</li>
+                  <li>The status flags are updated based on the result.</li>
+                </ul>
+                <br>
+                Once the current instruction is executed, the CPU goes back to the <b>fetch</b> stage to get the next instruction
+                </p>
+                </div>
+            </article>
+            <a href="../assembly.html" class="back-link">← Back to Assembly Topics</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>

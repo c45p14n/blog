@@ -1,5 +1,12 @@
 [
     {
+        "title": "Binary Brotherhood : Assembly in the Age of Control",
+        "date": "2025-10-19",
+        "excerpt": "",
+        "file": "posts/assembly.html",
+        "tags": ["assembly", "programming", "course"]
+    },
+    {
         "title": "Mouth of Sauron - How to use ESP32-CAM",
         "date": "2025-10-15",
         "excerpt": "",
