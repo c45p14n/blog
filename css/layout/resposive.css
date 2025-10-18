@@ -1,0 +1,5 @@
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    .posts-grid { grid-template-columns: 1fr; }
+    .container { padding: 0 1rem; }
+}
