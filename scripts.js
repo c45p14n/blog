@@ -1,53 +1,22 @@
-// Blog post configuration
-// Add your posts here in reverse chronological order (newest first)
-const posts = [
-    {
-        id: 'post-6',
-        title: 'Mouth of Sauron - How to use ESP32-CAM',
-        date: '2025-10-15',
-        excerpt: '',
-        file: 'posts/Mouth_of_Sauron - How_to_use_ESP32-CAM.html'
-    },
-    {
-        id: 'post-5',
-        title: 'Getting started to write simple Malicious code in C',
-        date: '2025-10-13',
-        excerpt: '',
-        file: 'posts/Getting_started_to_write_simple_Malicious_code_in_C.html'
-    },
-    {
-        id: 'post-4',
-        title: 'Why I’m Leaving Major Social Medias — and the SHADY part of the Internet',
-        date: '2025-10-11',
-        excerpt: '',
-        file: 'posts/Why_I_am_Leaving_Major_Social_Medias-and_the_SHADY_part_of_the_Internet.html'
-    },
-    {
-        id: 'post-3',
-        title: 'Beginner-friendly C++ basics guide',
-        date: '2025-10-10',
-        excerpt: '',
-        file: 'posts/Beginner-friendly_C++_basics_guide.html'
-    },
-    {
-        id: 'post-2',
-        title: 'Tame Your Git: Cleaner History, Painless Merges',
-        date: '2025-10-07',
-        excerpt: '',
-        file: 'posts/TameYourGit.html'
-    },
-    {
-        id: 'post-1',
-        title: 'Welcome to My Digital Space',
-        date: '2025-10-07',
-        excerpt: '',
-        file: 'posts/post-1.html'
-    }
-];
-
-// Pagination settings
 const POSTS_PER_PAGE = 12;
 let currentIndex = 0;
+let allPostsMetadata = []; // Just titles, dates, excerpts
+
+// Load post index (lightweight - just metadata)
+async function initializeBlog() {
+    const container = document.getElementById('postsContainer');
+    
+    try {
+        const response = await fetch('posts/index.json');
+        if (!response.ok) throw new Error('Failed to load posts index');
+        
+        allPostsMetadata = await response.json();
+        loadPosts();
+    } catch (error) {
+        console.error('Error loading posts:', error);
+        container.innerHTML = '<div class="loading">Error loading posts. Please try again later.</div>';
+    }
+}
 
 // Load and display posts in batches
 function loadPosts() {
@@ -58,14 +27,14 @@ function loadPosts() {
         container.innerHTML = '';
     }
 
-    if (posts.length === 0) {
+    if (allPostsMetadata.length === 0) {
         container.innerHTML = '<div class="loading">No posts yet. Check back soon!</div>';
         return;
     }
 
     // Calculate posts to show
-    const endIndex = Math.min(currentIndex + POSTS_PER_PAGE, posts.length);
-    const postsToShow = posts.slice(currentIndex, endIndex);
+    const endIndex = Math.min(currentIndex + POSTS_PER_PAGE, allPostsMetadata.length);
+    const postsToShow = allPostsMetadata.slice(currentIndex, endIndex);
 
     // Remove existing "Load More" button if present
     const existingButton = document.getElementById('loadMoreBtn');
@@ -79,16 +48,23 @@ function loadPosts() {
         card.className = 'post-card';
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
+        
+        // Add tags if they exist
+        const tagsHTML = post.tags ? 
+            `<div class="post-tags">${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` 
+            : '';
+        
         card.innerHTML = `
             <div class="post-date">${formatDate(post.date)}</div>
             <h2 class="post-title">${post.title}</h2>
             <p class="post-excerpt">${post.excerpt}</p>
+            ${tagsHTML}
             <a href="${post.file}" class="read-more">READ MORE →</a>
         `;
         
         // Add click handler for the entire card
         card.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'A') {
+            if (e.target.tagName !== 'A' && !e.target.classList.contains('tag')) {
                 window.location.href = post.file;
             }
         });
@@ -107,21 +83,40 @@ function loadPosts() {
     currentIndex = endIndex;
 
     // Add "Load More" button if there are more posts
-    if (currentIndex < posts.length) {
+    if (currentIndex < allPostsMetadata.length) {
         const loadMoreBtn = document.createElement('button');
         loadMoreBtn.id = 'loadMoreBtn';
         loadMoreBtn.className = 'load-more-btn';
-        loadMoreBtn.textContent = `Load More (${posts.length - currentIndex} remaining)`;
+        loadMoreBtn.textContent = `Load More (${allPostsMetadata.length - currentIndex} remaining)`;
         loadMoreBtn.onclick = loadPosts;
         container.appendChild(loadMoreBtn);
     }
 }
 
-// Format date nicely
-function formatDate(dateString) {
+// Format date nicely - handles both single dates and date ranges
+function formatDate(date) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    
+    // Check if it's a date range (object with start and end)
+    if (typeof date === 'object' && date.start && date.end) {
+        const start = new Date(date.start);
+        const end = new Date(date.end);
+        
+        if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
+            // Same month: "12 to 29 August 2025"
+            const monthYear = end.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+            return `${start.getDate()} to ${end.getDate()} ${monthYear}`;
+        } else {
+            // Different months: "August 12, 2025 to September 5, 2025"
+            const startDate = start.toLocaleDateString('en-US', options);
+            const endDate = end.toLocaleDateString('en-US', options);
+            return `${startDate} to ${endDate}`;
+        }
+    }
+    
+    // Single date
+    return new Date(date).toLocaleDateString('en-US', options);
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', loadPosts);
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initializeBlog);
