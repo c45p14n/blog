@@ -1,0 +1,81 @@
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.tag {
+    position: relative;
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: 1px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+/* Alternating cyber colors */
+.tag:nth-child(odd) {
+    color: var(--cyber-blue);
+    border-color: var(--cyber-blue);
+    background: rgba(0, 243, 255, 0.05);
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+}
+
+.tag:nth-child(even) {
+    color: var(--cyber-pink);
+    border-color: var(--cyber-pink);
+    background: rgba(255, 0, 110, 0.05);
+    box-shadow: 0 0 10px rgba(255, 0, 110, 0.1);
+}
+
+/* Hover effects */
+.tag:nth-child(odd):hover {
+    background: rgba(0, 243, 255, 0.15);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.tag:nth-child(even):hover {
+    background: rgba(255, 0, 110, 0.15);
+    box-shadow: 0 0 20px rgba(255, 0, 110, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Glowing border animation on hover */
+.tag::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, transparent, currentColor, transparent);
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+    filter: blur(8px);
+}
+
+.tag:hover::before {
+    opacity: 0.6;
+}
+
+/* Optional: Scanline effect */
+.tag::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.tag:hover::after {
+    left: 100%;
+}
