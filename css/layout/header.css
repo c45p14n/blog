@@ -1,0 +1,18 @@
+header {
+    background: rgba(10, 14, 39, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--cyber-blue);
+    padding: 0.6rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+}
+
+.tagline {
+    text-align: center;
+    color: var(--cyber-blue);
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    letter-spacing: 2px;
+}
