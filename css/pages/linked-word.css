@@ -1,0 +1,39 @@
+.post-content .linked-word {
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.post-content .linked-word {
+  font-family: 'Orbitron', sans-serif;
+  color: #00bfff; /* electric blue */
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.post-content .linked-word::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #00bfff, #ff003c);
+  box-shadow: 0 0 5px #00bfff, 0 0 10px #ff003c;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.post-content .linked-word:hover {
+  color: #ff003c; /* neon red */
+  text-shadow: 0 0 8px #00bfff, 0 0 15px #ff003c;
+}
+
+.post-content .linked-word:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}

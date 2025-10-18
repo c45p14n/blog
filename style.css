@@ -56,25 +56,3 @@
     background: none;
     padding: 0;
 }
-
-.post-content .styled-link {
-  color: #1a73e8;
-  text-decoration: none;
-  font-weight: 600;
-  padding: 2px 4px;
-  border-radius: 4px;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-/* states */
-.post-content .styled-link:hover,
-.post-content .styled-link:focus {
-  background-color: #ffcccc;
-  color: #0b57d0;
-  text-decoration: underline;
-  outline: none; /* replace with visible focus style for accessibility */
-}
-
-.post-content .styled-link:active {
-  transform: translateY(1px);
-}
