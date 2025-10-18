@@ -78,25 +78,3 @@
 .post-content .styled-link:active {
   transform: translateY(1px);
 }
-
-.back-link {
-    display: inline-block;
-    margin: 2rem 0;
-    color: var(--cyber-pink);
-    text-decoration: none;
-    font-weight: 600;
-    transition: transform 0.3s;
-}
-
-.back-link {
-    display: inline-block;
-    margin: 2rem 0;
-    color: var(--cyber-pink);
-    text-decoration: none;
-    font-weight: 600;
-    transition: transform 0.3s;
-}
-
-.back-link:hover {
-    transform: translateX(-5px);
-}
