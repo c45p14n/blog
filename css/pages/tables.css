@@ -1,0 +1,39 @@
+table {
+  width: 90%;
+  border-collapse: collapse;
+  background-color: var(--darker-bg);
+  border: 1px solid var(--cyber-blue);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+caption {
+  caption-side: top;
+  margin-bottom: 12px;
+  font-size: 1.3em;
+  color: var(--cyber-blue);
+}
+
+th, td {
+  padding: 12px 18px;
+  text-align: center;
+  border-bottom: 1px solid rgba(224, 224, 224, 0.2);
+  transition: background 0.3s, color 0.3s;
+}
+
+th {
+  color: var(--text-color);
+}
+
+tr:hover {
+  background-color: rgba(140, 0, 255, 0.1); /* soft purple highlight */
+}
+
+td {
+  color: var(--text-color);
+}
+
+td:hover {
+  color: var(--cyber-pink);
+}
