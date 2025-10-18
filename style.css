@@ -35,14 +35,6 @@ main {
     margin-top: 2rem;
 }
 
-footer {
-    background: rgba(10, 14, 39, 0.8);
-    border-top: 2px solid var(--cyber-blue);
-    padding: 2rem 0;
-    text-align: center;
-    margin-top: 4rem;
-}
-
 /* Post page styles */
 .post-header {
     text-align: center;
