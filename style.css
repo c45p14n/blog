@@ -19,11 +19,6 @@ body::before {
     animation: gridMove 20s linear infinite;
 }
 
-@keyframes gridMove {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(50px, 50px); }
-}
-
 header {
     background: rgba(10, 14, 39, 0.8);
     backdrop-filter: blur(10px);
@@ -39,12 +34,6 @@ header {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
-}
-
-@keyframes glitch {
-    0%, 90%, 100% { transform: translate(0); }
-    92% { transform: translate(-2px, 2px); }
-    94% { transform: translate(2px, -2px); }
 }
 
 .tagline {
