@@ -174,7 +174,7 @@ function loadPosts() {
             <h2 class="post-title">${highlightText(post.title, currentSearchTerm)}</h2>
             <p class="post-excerpt">${highlightText(post.excerpt, currentSearchTerm)}</p>
             ${tagsHTML}
-            <a href="${post.file}" class="read-more">READ MORE â†’</a>
+            <a href="${post.file}" class="read-more">READ MORE</a>
         `;
         
         // Add click handler for the entire card
