@@ -15,9 +15,42 @@
     </header>
 
     <main>
+ <!-- Search and Filter Section -->
+                <div class="search-filter-section">
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Search posts by title or tags..."
+                            aria-label="Search posts"
+                        >
+                        <button id="searchBtn" class="search-btn" aria-label="Search">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Active Tags Display -->
+                    <div id="activeTags" class="active-tags" style="display: none;"></div>
+
+                    <!-- Clear Filters Button -->
+                    <button id="clearFilters" class="clear-filters-btn" style="display: none;">
+                        Clear All Filters
+                    </button>
+                </div>
+                <!-- Optional: Tag Cloud Sidebar -->
+                <div class="content-wrapper">
+                    <!-- Sidebar with Tag Cloud (Optional) -->
+                    <aside class="sidebar">
+                        <h3>Filter by Tags</h3>
+                        <div id="tagCloud" class="tag-cloud"></div>
+                    </aside>
+
         <div class="container">
-            <div class="posts-grid" id="postsContainer">
-                <div class="loading">Loading posts...</div>
+                           <div class="posts-grid" id="postsContainer">
+            <div class="loading">Loading posts...</div>
             </div>
         </div>
     </main>
