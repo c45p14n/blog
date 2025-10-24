@@ -1,5 +1,12 @@
 [
     {
+        "title": "The Scrolls of Order and Chaos: SQL and NoSQL Magic",
+        "date": "2025-10-24",
+        "excerpt": "",
+        "file": "posts/The_Scrolls_of_Order_and_Chaos_:_SQL_and_NoSQL_Magic.html",
+        "tags": ["programming", "database", "owasp", "note", "course"]
+    },
+    {
         "title": "Binary Brotherhood : Assembly in the Age of Control",
         "date": "2025-10-19",
         "excerpt": "",
