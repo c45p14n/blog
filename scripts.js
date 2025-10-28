@@ -1,5 +1,5 @@
 // Page config
-const POSTS_PER_PAGE = 12;
+const POSTS_PER_PAGE = 12
 let currentIndex = 0;
 let allPostsMetadata = [];
 let filteredPosts = [];

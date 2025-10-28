@@ -87,11 +87,11 @@
 
                 <pre>Client-Server Relationship:
 
-┌──────────┐                    ┌──────────┐
-│  CLIENT  │ ----[Request]----> │  SERVER  │
-│ (Browser)│                    │   (Web)  │
-│          │ <---[Response]---- │          │
-└──────────┘                    └──────────┘
++----------+                    +----------+
+|  CLIENT  │ ----[Request]----> |  SERVER  |
+| (Browser)│                    |   (Web)  |
+|          │ <---[Response]---- |          |
++----------+                    +----------+
      You                        The Castle</pre>
 
                 <h3>What is the Internet?</h3>
@@ -112,14 +112,14 @@
                 <pre>The Internet Structure:
 
 🏠 Home              🏢 Office           🏢 Data Center
- │                    │                      │
- └───[Router]─────────┼───────[Router]───────┤
-         │            │           │          │
-   ┌─────┴────────────┴─────┬─────┴──────────┘
-   │                        │
+ |                    |                      |
+ +---[Router]---------+-------[Router]-------+
+         |            |           |          |
+   +-----+------------+-----+-----+----------+
+   |                        |
 [ISP 1]                  [ISP 2]
-   │                        │
-   └────────[INTERNET]──────┘
+   |                        |
+   +--------[INTERNET]------+
           (Global Network)</pre>
 
                 <h3>The OSI Model - The Seven Layers of Magic</h3>
@@ -224,7 +224,7 @@
                 <pre>IP Address Structure (IPv4):
 
     192    .    168    .     1     .    100
-     │           │           │           │
+     |           |           |           |
   Network    Network     Subnet      Device
    Part        Part        Part        Part</pre>
 
@@ -245,7 +245,7 @@
                 <pre>IP Address + Port = Complete Address:
 
     192.168.1.100:80
-          │        │
+          |        |
      IP Address  Port
      (Castle)   (Door)</pre>
 
@@ -267,12 +267,12 @@
 
 Your Home Network:             The Internet:
 
-💻 Computer                    ┌──────────┐
-📱 Phone                       │ Internet │
-🖥️  Laptop                     │ (Cloud)  │
-   │                           └─────┬────┘
-   ├──[Home Router]──────────────────┘
-   │   192.168.1.1            Public IP: 203.0.113.50
+💻 Computer                    +----------+
+📱 Phone                       | Internet |
+🖥️  Laptop                     | (Cloud)  |
+   |                           +-----+----+
+   +--[Home Router]------------------+
+   |   192.168.1.1            Public IP: 203.0.113.50
 🖨️  Printer
 
 Router translates private IPs to public IP!</pre>
@@ -291,18 +291,18 @@ Router translates private IPs to public IP!</pre>
                 <pre>TCP Three-Way Handshake:
 
 Client                          Server
-   │                              │
-   │────[SYN]──────────────────&gt;  │  "Hello, can we talk?"
-   │                              │
-   │  &lt;──────────────[SYN-ACK]────│  "Yes! I'm ready!"
-   │                              │
-   │────[ACK]──────────────────&gt;  │  "Great, let's begin!"
-   │                              │
-    ═══ Connection Established ═══
-   │                              │
-   │────[Data packets]─────────&gt;  │
-   │  &lt;─────[ACK received]────────│
-   │                              │</pre>
+   |                              |
+   |----[SYN]------------------&gt;  |  "Hello, can we talk?"
+   |                              |
+   |  &lt;--------------[SYN-ACK]----|  "Yes! I'm ready!"
+   |                              |
+   |----[ACK]------------------&gt;  |  "Great, let's begin!"
+   |                              |
+    === Connection Established ===
+   |                              │
+   |----[Data packets]---------&gt;  |
+   |  &lt;-----[ACK received]--------|
+   |                              |</pre>
 <p>(It's like a very polite conversation, really)</p>
 
                 <h3>UDP - The Fast Messenger</h3>
@@ -319,11 +319,11 @@ Client                          Server
                 <pre>UDP - Just Send It!
 
 Client                          Server
-   │                              │
-   │────[Packet 1]──────────────> │  Just send!
-   │────[Packet 2]────X (lost)    │  No confirmation
-   │────[Packet 3]──────────────> │  Keep going!
-   │                              │
+   |                              |
+   |----[Packet 1]--------------> |  Just send!
+   |----[Packet 2]----X (lost)    |  No confirmation
+   |----[Packet 3]--------------> |  Keep going!
+   |                              |
    No handshake, no guarantees!</pre>
 <p><b>(If it arrives, great. If not... ¯\_(ツ)_/¯)</b></p>
 
@@ -468,11 +468,11 @@ Client                          Server
 
 Your Computer                    DNS Server
 (192.168.1.100)                  (8.8.8.8:53)
-     │                                │
-     │──[UDP: Where is google.com?]──>│
-     │                                │
-     │<─[UDP: It's 142.250.185.46]────│
-     │                                │</pre>
+     |                                |
+     |--[UDP: Where is google.com?]-->|
+     |                                |
+     |<-[UDP: It's 142.250.185.46]----|
+     |                                |</pre>
 <p><b>Fast! No handshake needed!</b></p>
 
                 <h3>The Key Players in DNS Magic</h3>
@@ -511,33 +511,33 @@ Your Computer                    DNS Server
 
                 <pre>The Complete DNS Journey:
 
-┌──────────────┐
-│   Browser    │ "Where is google.com?"
-│ (You type!)  │
-└──────┬───────┘
-       │
++--------------+
+|   Browser    | "Where is google.com?"
+| (You type!)  |
++------+-------+
+       |
        ▼
-┌──────────────┐
-│  OS Cache    │ Check cache first
-│ (127.0.0.1)  │
-└──────┬───────┘
-       │ Not found
++--------------+
+|  OS Cache    | Check cache first
+| (127.0.0.1)  |
++------+-------+
+       | Not found
        ▼
-┌──────────────┐
-│    Router    │ Ask the router
-│(192.168.1.1) │
-└──────┬───────┘
-       │ Not found
++--------------+
+|    Router    | Ask the router
+|(192.168.1.1) |
++------+-------+
+       | Not found
        ▼
-┌──────────────┐
-│  ISP's DNS   │ Ask ISP's DNS Server
-│   Server     │
-└──────┬───────┘
-       │ Not found
++--------------+
+|  ISP's DNS   | Ask ISP's DNS Server
+|   Server     |
++------+-------+
+       | Not found
        ▼
-┌──────────────┐
-│ Root Server  │ Start the hierarchy!
-└──────────────┘</pre>
++--------------+
+| Root Server  | Start the hierarchy!
++--------------+</pre>
 
                 <h3>The Dark Magic: How ISPs Can Change IPs</h3>
                 <p>Here's something mysterious: Your ISP sits in the middle of this journey. They can be like a mischievous genie who shows you a different castle than the one you asked for! This is because:</p>
@@ -562,20 +562,20 @@ Your Computer                    DNS Server
 
                 <pre>DNS Server Types:
 
-┌─────────────────────────────────────────┐
-│         All DNS Servers                 │
-│  ┌───────────────────────────────────┐  │
-│  │    Recursive DNS Servers          │  │
-│  │    (Your ISP, 8.8.8.8)            │  │
-│  │    - Ask others for answers       │  │
-│  └───────────────────────────────────┘  │
-│                                         │
-│  ┌───────────────────────────────────┐  │
-│  │   Authoritative NameServers       │  │
-│  │   (ns1.google.com)                │  │
-│  │   - Have the final answers        │  │
-│  └───────────────────────────────────┘  │
-└─────────────────────────────────────────┘</pre>
++-----------------------------------------+
+|         All DNS Servers                 |
+|  +-----------------------------------+  |
+|  |    Recursive DNS Servers          |  |
+|  |    (Your ISP, 8.8.8.8)            |  |
+|  |    - Ask others for answers       |  |
+|  +-----------------------------------+  |
+|                                         |
+|  +-----------------------------------+  |
+|  |   Authoritative NameServers       |  |
+|  |   (ns1.google.com)                |  |
+|  |   - Have the final answers        |  |
+|  +-----------------------------------+  |
++-----------------------------------------+</pre>
 
                 <hr>
 
@@ -585,18 +585,18 @@ Your Computer                    DNS Server
 
                 <pre>The DNS Hierarchy Tree:
  
-                 Root)
-                  │
-      ┌───────────┼───────────┬─────────┐
-      │           │           │         │
+                (Root)
+                  |
+      +-----------+-----------+---------+
+      |           |           |         |
      .com        .org        .net      .edu
-      │           │           │         │
-   ┌──┴──┐     ┌──┴──┐        │         │
-google amazon wikipedia       │         │
-   │      │       │           │         │
- ┌─┴─┐    │      www        ┌─┴─┐       │
-www mail  │              github │      mit
-          │                     │
+      |           |           |         |
+   +--+--+     +--+--+        |         |
+google amazon wikipedia       |         |
+   |      |       |           |         |
+ +-+-+    |      www        +-+-+       |
+www mail  |              github |      mit
+          |                     |
          aws                   docs </pre>
                 <p>
                 Example paths:
@@ -692,32 +692,32 @@ m.root-servers.net  (WIDE)</pre>
                 <pre>DNS Resolution Journey for www.example.com:
 
 Your Computer
-     │
-     │ "Where is www.example.com?"
+     |
+     | "Where is www.example.com?"
      ▼
 [Recursive DNS Server]
-     │
-     │ 1) "I don't know, let me ask..."
+     |
+     | 1) "I don't know, let me ask..."
      ▼
 [Root Server (.)]
-     │
-     │ 2) "Ask the .com TLD servers at [IPs]"
+     |
+     | 2) "Ask the .com TLD servers at [IPs]"
      ▼
 [.com TLD Server]
-     │
-     │ 3) "Ask example.com's NameServers at ns1.example.com"
+     |
+     | 3) "Ask example.com's NameServers at ns1.example.com"
      ▼
 [example.com NameServer]
-     │
-     │ 4) "www.example.com is at 93.184.216.34"
+     |
+     | 4) "www.example.com is at 93.184.216.34"
      ▼
 [Recursive DNS Server]
-     │
-     │ 5) "Here's your answer: 93.184.216.34"
+     |
+     | 5) "Here's your answer: 93.184.216.34"
      ▼
 Your Computer
-     │
-     │ Success! Now connect to 93.184.216.34
+     |
+     | Success! Now connect to 93.184.216.34
      ▼</pre>
 
                 <hr>
@@ -754,18 +754,18 @@ Your Computer
 
                 <pre>Domain Panel Configuration:
 
-┌─────────────────────────────────────┐
-│   Domain: myawesomesite.com         │
-│                                     │
-│   NameServers:                      │
-│   ┌───────────────────────────────┐ │
-│   │ ns1.cloudflare.com            │ │
-│   │ ns2.cloudflare.com            │ │
-│   └───────────────────────────────┘ │
-│                                     │
-│   [Save Changes]                    │
-└─────────────────────────────────────┘
-          │
++-------------------------------------+
+|   Domain: myawesomesite.com         |
+|                                     |
+|   NameServers:                      |
+|   +-------------------------------+ |
+|   | ns1.cloudflare.com            | |
+|   | ns2.cloudflare.com            | |
+|   +-------------------------------+ |
+|                                     |
+|   [Save Changes]                    |
++---------+---------------------------+
+          |
           ▼
 TLD Servers now know to redirect
 queries to Cloudflare's NameServers!</pre>
@@ -860,7 +860,7 @@ queries to Cloudflare's NameServers!</pre>
                 <p>The <b>dig</b> command is a magical crystal ball that lets you see DNS records!</p>
 
                 <p>Basic usage:</p>
-                <pre># Find A records
+                <pre><code># Find A records
 dig example.com
 
 # Find specific record types
@@ -879,7 +879,7 @@ dig @8.8.8.8 example.com
 dig example.com +short
 
 # Trace the full DNS path
-dig example.com + trace</pre>
+dig example.com + trace</code></pre>
 
                 <h3>Who Configures NameServers?</h3>
                 <p>
@@ -1186,58 +1186,58 @@ Listen 443</code></pre>
 
                 <pre>Complete HTTP Request Journey:
 
-┌──────────────────────────────────────────────┐
-│ 1. DNS Query                                 │
-│    "Where is example.com?"                   │
-│    └─> Answer: 93.184.216.34                 │
-└────────┬─────────────────────────────────────┘
-         │
++----------------------------------------------+
+| 1. DNS Query                                 |
+|    "Where is example.com?"                   |
+|    +-> Answer: 93.184.216.34                 |
++--------+-------------------------------------+
+         |
          ▼
-┌──────────────────────────────────────────────┐
-│ 2. TCP Three-Way Handshake                   │
-│    Client: SYN                               │
-│    Server: SYN-ACK                           │
-│    Client: ACK                               │
-│    └─> TCP Connection Established            │
-└────────┬─────────────────────────────────────┘
-         │
++----------------------------------------------+
+| 2. TCP Three-Way Handshake                   |
+|    Client: SYN                               |
+|    Server: SYN-ACK                           |
+|    Client: ACK                               |
+|    +-> TCP Connection Established            |
++--------+-------------------------------------+
+         |
          ▼
-┌──────────────────────────────────────────────┐
-│ 3. SSL/TLS Handshake (if HTTPS)              │
-│    - Client Hello                            │
-│    - Server Certificate                      │
-│    - Key Exchange                            │
-│    - Encrypted Channel Ready                 │
-└────────┬─────────────────────────────────────┘
-         │
++----------------------------------------------+
+| 3. SSL/TLS Handshake (if HTTPS)              |
+|    - Client Hello                            |
+|    - Server Certificate                      |
+|    - Key Exchange                            |
+|    - Encrypted Channel Ready                 |
++--------+-------------------------------------+
+         |
          ▼
-┌──────────────────────────────────────────────┐
-│ 4. HTTP Request                              │
-│    GET /index.html HTTP/1.1                  │
-│    Host: example.com                         │
-└────────┬─────────────────────────────────────┘
-         │
++----------------------------------------------+
+| 4. HTTP Request                              |
+|    GET /index.html HTTP/1.1                  |
+|    Host: example.com                         |
++--------+-------------------------------------+
+         |
          ▼
-┌──────────────────────────────────────────────┐
-│ 5. Server Processing                         │
-│    - Match Virtual Host                      │
-│    - Find file in DocumentRoot               │
-│    - Generate response                       │
-└────────┬─────────────────────────────────────┘
-         │
++----------------------------------------------+
+| 5. Server Processing                         |
+|    - Match Virtual Host                      |
+|    - Find file in DocumentRoot               |
+|    - Generate response                       |
++--------+-------------------------------------+
+         |
          ▼
-┌──────────────────────────────────────────────┐
-│ 6. HTTP Response                             │
-│    HTTP/1.1 200 OK                           │
-│    Content-Type: text/html                   │
-│    [HTML content]                            │
-└────────┬─────────────────────────────────────┘
-         │
++----------------------------------------------+
+| 6. HTTP Response                             |
+|    HTTP/1.1 200 OK                           |
+|    Content-Type: text/html                   |
+|    [HTML content]                            |
++--------+-------------------------------------+
+         |
          ▼
-┌──────────────────────────────────────────────┐
-│ 7. Browser Renders Page                      │
-│    You see the website!                      │
-└──────────────────────────────────────────────┘</pre>
++----------------------------------------------+
+| 7. Browser Renders Page                      |
+|    You see the website!                      |
++----------------------------------------------+</pre>
 
                 <h4>Step 1: DNS Query</h4>
                 <p>First, we need to find where the castle is! Your computer asks DNS: "Where is example.com?" and gets back an IP address like 93.184.216.34</p>
@@ -1256,26 +1256,26 @@ Listen 443</code></pre>
                 <pre>SSL/TLS Handshake Process:
                 
 Client                           Server
-  │                                │
-  │──[1. Client Hello]──────────>  │
-  │   "I support these ciphers"    │
-  │   "Here are random bytes"      │
-  │                                │
-  │  <────[2. Server Hello]────────│
-  │     "Let's use this cipher"    │
-  │     [Server Certificate]       │
-  │     "Here's my public key"     │
-  │                                │
-  │──[3. Key Exchange]──────────>  │
-  │   (Exchange encryption keys)   │
-  │   (Client verifies cert)       │
-  │                                │
-  │  <────[4. Finished]────────────│
-  │                                │
-    ═══ Encrypted Connection! ═══
-  │                                │
-  │──[Encrypted HTTP Request]────> │
-  │                                │
+  |                                |
+  |--[1. Client Hello]---------->  |
+  |   "I support these ciphers"    |
+  |   "Here are random bytes"      |
+  |                                |
+  |  <----[2. Server Hello]--------|
+  |     "Let's use this cipher"    |
+  |     [Server Certificate]       |
+  |     "Here's my public key"     |
+  |                                |
+  |--[3. Key Exchange]---------->  |
+  |   (Exchange encryption keys)   |
+  |   (Client verifies cert)       |
+  |                                |
+  |  <----[4. Finished]------------|
+  |                                |
+    === Encrypted Connection! ===
+  |                                |
+  |--[Encrypted HTTP Request]----> |
+  |                                |
 (Now hackers just see gibberish. Beautiful!)</pre>
 
                 <p>This is VERY IMPORTANT because it:</p>
@@ -1368,12 +1368,12 @@ Client                           Server
                     </tbody>
                 </table></pre>
 
-                <pre>. Finished]────────────│
-│                                │
-│═══ Encrypted Connection! ═══════
-│                                │
-│──[Encrypted HTTP Request]────> │
-│                                │</pre>
+                <pre>  Finished]----------------------|
+|                                |
+   === Encrypted Connection! ===
+|                                |
+|--[Encrypted HTTP Request]----> |
+|                                |</pre>
 
 <p>
 Pro tip: If your site doesn't use HTTPS in 2025, browsers will
@@ -1411,14 +1411,14 @@ in big red letters. Your users deserve better!
 
      DNS Records:                   Apache Server
                                    (192.168.1.100)
-site1.com ──┐                           │
-site2.com ──┼──> 192.168.1.100 ───────> ├─ VirtualHost site1.com
-site3.com ──┘                           │   DocumentRoot: /var/www/site1
-                                        │
-                                        ├─ VirtualHost site2.com
-                                        │   DocumentRoot: /var/www/site2
-                                        │
-                                        └─ VirtualHost site3.com
+site1.com --+                           |
+site2.com --+--> 192.168.1.100 -------> +- VirtualHost site1.com
+site3.com --+                           |   DocumentRoot: /var/www/site1
+                                        |
+                                        +- VirtualHost site2.com
+                                        |   DocumentRoot: /var/www/site2
+                                        |
+                                        +- VirtualHost site3.com
                                             DocumentRoot: /var/www/site3
 
 The server uses the "Host" header to decide which site to serve!</pre>
@@ -1456,13 +1456,13 @@ sudo systemctl reload apache2</code></pre>
                 <pre>sites-available vs sites-enabled:
 
 /etc/apache2/sites-available/    /etc/apache2/sites-enabled/
-┌──────────────────┐             ┌──────────────────┐
-│ site1.conf       │             │ site1.conf ──────┼──> (symlink)
-│ site2.conf       │             │ site3.conf ──────┼──> (symlink)
-│ site3.conf       │             └──────────────────┘
-│ site4.conf       │                   ▲
-│ (disabled)       │                   │
-└──────────────────┘             Apache only reads these!
++------------------+             +------------------+
+| site1.conf       |             | site1.conf ------+--> (symlink)
+| site2.conf       |             | site3.conf ------+--> (symlink)
+| site3.conf       |             +------------------+
+| site4.conf       |                   ▲
+| (disabled)       |                   |
++------------------+             Apache only reads these!
      Storage                           Active sites</pre>
 
                 <h4>Step 3: Difference Between sites-available and sites-enabled</h4>
@@ -1493,24 +1493,24 @@ Connection: keep-alive</code></pre>
                 <pre>Apache Virtual Host Matching:
 
 Incoming Request:
-┌─────────────────────────────┐
-│ GET / HTTP/1.1              │
-│ Host: mysite.com            │  ← Apache reads this!
-│ User-Agent: Mozilla/5.0     │
-└─────────────┬───────────────┘
-              │
++-----------------------------+
+| GET / HTTP/1.1              |
+| Host: mysite.com            |  ← Apache reads this!
+| User-Agent: Mozilla/5.0     |
++-------------+---------------+
+              |
               ▼
 Apache checks all Virtual Hosts:
-┌─────────────────────────────┐
-│ VirtualHost *:80            │
-│   ServerName site1.com      │  ✗ No match
-└─────────────────────────────┘
-┌─────────────────────────────┐
-│ VirtualHost *:80            │
-│   ServerName mysite.com     │  ✓ MATCH!
-│   DocumentRoot /var/www/... │
-└─────────────┬───────────────┘
-              │
++-----------------------------+
+| VirtualHost *:80            |
+|   ServerName site1.com      |  ✗ No match
++-----------------------------+
++-----------------------------+
+| VirtualHost *:80            |
+|   ServerName mysite.com     |  ✓ MATCH!
+|   DocumentRoot /var/www/... |
++-------------+---------------+
+              |
               ▼
 Serve files from /var/www/mysite/</pre>
 
@@ -1540,27 +1540,27 @@ Serve files from /var/www/mysite/</pre>
                 <pre>DNS vs Virtual Host - The Complete Picture:
 
 Stage 1: DNS Resolution
-───────────────────────────────────────
+---------------------------------------
 You type: "mysite.com"
-     │
+     |
      ▼
 DNS System: "mysite.com = 192.168.1.100"
-     │
+     |
      ▼
 Browser now knows the IP!
 
 
 Stage 2: HTTP Request with Virtual Host
-───────────────────────────────────────
+----------------------------------------
 Browser connects to: 192.168.1.100:80
-     │
+     |
      ▼
 Browser sends:
-┌─────────────────────────────┐
-│ GET / HTTP/1.1              │
-│ Host: mysite.com            │  ← This tells Apache which site!
-└─────────────┬───────────────┘
-              │
++-----------------------------+
+| GET / HTTP/1.1              |
+| Host: mysite.com            |  ← This tells Apache which site!
++-------------+---------------+
+              |
               ▼
 Apache: "Ah, serve from /var/www/mysite/"</pre>
 
@@ -1591,11 +1591,11 @@ Apache: "Ah, serve from /var/www/mysite/"</pre>
                 <pre>What happens WITHOUT Host header:
 
 Old HTTP/1.0 Request (no Host header):
-┌─────────────────────────────┐
-│ GET / HTTP/1.0              │
-│                             │  ← No Host header!
-└─────────────┬───────────────┘
-              │
++-----------------------------+
+| GET / HTTP/1.0              |
+|                             |  ← No Host header!
++-------------+---------------+
+              |
               ▼
 Apache: "Uh... which site? I'll serve the DEFAULT!"
 
@@ -1613,15 +1613,15 @@ Result: You get the first VirtualHost or default site
 
     https://www.example.com:443/path/to/page?query=value#section
 
-    ├──┬──┘ └┬┘ └────┬────┘ └┬┘ └────┬────┘ └─────┬─────┘ └──┬──┘
-    │  │     │       │       │       │            │          │
-    │  │     │       │       │       │            │       Fragment
-    │  │     │       │       │       │       Query String
-    │  │     │       │       │      Path
-    │  │     │       │      Port
-    │  │     │ Domain + TLD
-    │  │ Subdomain
-    │ Scheme
+    +--+--+ +++ +----+----+ +++ +----+----+ +-----+-----+ +--+--+
+    |  |     |       |       |       |            |          |
+    |  |     |       |       |       |            |       Fragment
+    |  |     |       |       |       |       Query String
+    |  |     |       |       |      Path
+    |  |     |       |      Port
+    |  |     | Domain + TLD
+    |  | Subdomain
+    | Scheme
 Protocol</pre>
 
                 <h4>URL Components:</h4>
@@ -1650,20 +1650,20 @@ Protocol</pre>
                 <pre>Fragment Identifier Flow:
 
 You type: http://example.com/page#section2
-     │
+     |
      ▼
 Browser splits the URL:
-┌─────────────────────────────────────┐
-│ Request to server: /page            │  ← No #section2
-│ Keep for later: #section2           │  ← Stays in browser
-└─────────────┬───────────────────────┘
-              │
++-------------------------------------+
+| Request to server: /page            |  ← No #section2
+| Keep for later: #section2           |  ← Stays in browser
++-------------------------------------+
+              |
               ▼
 Server sends back the full page
-              │
+              |
               ▼
 Browser receives page
-              │
+              |
               ▼
 Browser scrolls to element with id="section2"
 
@@ -1686,14 +1686,14 @@ Part 5: ?https://      ← Query string
 Part 6: #http://       ← Fragment
 
 Attempted parsing:
-┌──────────────────────────────────────┐
-│ Scheme:   http://                    │
-│ Auth:     http://http://             │
-│ Host:     @http://                   │
-│ Port:     (invalid: http://)         │
-│ Query:    ?https://                  │
-│ Fragment: #http://                   │
-└──────────────────────────────────────┘</pre>
++--------------------------------------+
+| Scheme:   http://                    |
+| Auth:     http://http://             |
+| Host:     @http://                   |
+| Port:     (invalid: http://)         |
+| Query:    ?https://                  |
+| Fragment: #http://                   |
++--------------------------------------+</pre>
 
                 <p>Your browser will try to:</p>
                 <ol>
@@ -1862,12 +1862,12 @@ Content-Type: application/json
                 <pre>URI Family Tree:
 
        URI (Identifier)
-        │
-    ┌───┴───┐
-    │       │
+        |
+    +---+---+
+    |       |
    URL     URN
 (Location) (Name)
-    │       │
+    |       |
 http://ex   urn:isbn:
 /page       0451450523</pre>
 
@@ -2033,23 +2033,23 @@ Connection: keep-alive
                 <pre>HTTP Request/Response Flow:
 
 Browser                              Server
-   │                                   │
-   │────[HTTP Request]─────────────>   │
-   │  GET /page.html HTTP/1.1          │
-   │  Host: example.com                │
-   │  User-Agent: Chrome               │
-   │                                   │
-   │                                   │ Process request
-   │                                   │ Find file
-   │                                   │ Generate response
-   │                                   │
-   │   <────[HTTP Response]────────────│
-   │  HTTP/1.1 200 OK                  │
-   │  Content-Type: text/html          │
-   │  Content-Length: 1234             │
-   │                                   │
-   │  &lt;html&gt;...&lt;/html&gt;                 │
-   │                                   │</pre>
+   |                                   |
+   |----[HTTP Request]------------->   |
+   |  GET /page.html HTTP/1.1          |
+   |  Host: example.com                |
+   |  User-Agent: Chrome               |
+   |                                   |
+   |                                   | Process request
+   |                                   | Find file
+   |                                   | Generate response
+   |                                   |
+   |   <----[HTTP Response]------------|
+   |  HTTP/1.1 200 OK                  |
+   |  Content-Type: text/html          |
+   |  Content-Length: 1234             |
+   |                                   |
+   |  &lt;html&gt;...&lt;/html&gt;                 |
+   |                                   |</pre>
 
                 <hr>
 
@@ -2340,14 +2340,14 @@ curl https://example.com | xxd | head -n 10</code></pre>
                 <pre>Without CDN:                    With CDN:
 
 User in Tokyo                   User in Tokyo
-     │                               │
-     │ (Long distance)               │ (Short distance)
-     │                               │
+     |                               |
+     | (Long distance)               | (Short distance)
+     |                               |
      ▼                               ▼
 Origin Server                   CDN Edge Server
 in New York                     in Tokyo
-(Slow!)                              │
-                                     │ (Syncs from origin)
+(Slow!)                              |
+                                     | (Syncs from origin)
                                      ▼
                                 Origin Server
                                 in New York
@@ -2367,13 +2367,13 @@ in New York                     in Tokyo
                 Origin Server
                (Upstream/Source)
                 New York
-                     │
-        ┌────────────┼────────────┐
-        │            │            │
+                     |
+        +------------+------------+
+        |            |            |
 CDN Edge Server  CDN Edge    CDN Edge Server
   Tokyo            London        Sydney
-        │            │            │
-   ┌────┼────┐  ┌────┼────┐  ┌────┼────┐
+        |            |            |
+   +----+----+  +----+----+  +----+----+
 Users in     Users in     Users in
 Asia         Europe       Australia</pre>
 
@@ -2389,33 +2389,33 @@ Asia         Europe       Australia</pre>
                 <pre>Reverse Proxy Flow:
 
 User                CDN (Reverse Proxy)      Origin Server
- │                           │                     │
- │─[1. Request]──────────>   │                     │
- │   "Get /image.jpg"        │                     │
- │                           │                     │
- │                     [Check Cache]               │
- │                           │                     │
- │                      Cache Miss!                │
- │                           │                     │
- │                           │─[2. Request]──────> │
- │                           │  "Get /image.jpg"   │
- │                           │                     │
- │                           │ <─[3. Response]─────│
- │                           │  [Image Data]       │
- │                           │                     │
- │                      [Store in Cache]           │
- │                           │                     │
- │  <─[4. Response]──────────│                     │
- │   [Image Data]            │                     │
- │                           │                     │
- │─[5. Next Request]───────> │                     │
- │   "Get /image.jpg"        │                     │
- │                           │                     │
- │                      Cache HIT!                 │
- │                           │                     │
- │  <─[6. Fast Response]─────│                     │
- │   [Cached Image]          │  (No need to ask    │
- │                           │   origin!)          │</pre>
+ |                           |                     |
+ |-[1. Request]---------->   |                     |
+ |   "Get /image.jpg"        |                     |
+ |                           |                     |
+ |                     [Check Cache]               |
+ |                           |                     |
+ |                      Cache Miss!                |
+ |                           |                     |
+ |                           |-[2. Request]------> |
+ |                           |  "Get /image.jpg"   |
+ |                           |                     |
+ |                           | <-[3. Response]-----|
+ |                           |  [Image Data]       |
+ |                           |                     |
+ |                      [Store in Cache]           |
+ |                           |                     |
+ |  <-[4. Response]----------|                     |
+ |   [Image Data]            |                     |
+ |                           |                     |
+ |-[5. Next Request]-------> |                     |
+ |   "Get /image.jpg"        |                     |
+ |                           |                     |
+ |                      Cache HIT!                 |
+ |                           |                     |
+ |  <-[6. Fast Response]-----|                     |
+ |   [Cached Image]          |  (No need to ask    |
+ |                           |   origin!)          |</pre>
 
                 <p>It's like having a friendly dragon guarding your castle who also keeps copies of common scrolls for quick delivery!</p>
 
