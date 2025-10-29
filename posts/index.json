@@ -1,6 +1,13 @@
 [
     {
-        "title": "The Honest Truth About Dishonesty: Why Lying is Totally Fine",
+        "title": "Gríma Wormtongue : A Journey into SQLi",
+        "date": "2025-10-30",
+        "excerpt": "",
+        "file": "posts/Gríma_Wormtongue_:_A_Journey_into_SQLi.html",
+        "tags": ["programming", "database", "owasp", "note", "course"]
+    },
+    {
+        "title": "The Honest Truth About Dishonesty : Why Lying is Totally Fine",
         "date": "2025-10-27",
         "excerpt": "",
         "file": "posts/The_Honest_Truth_About_Dishonesty_:_Why_Lying_is_Totally_Fine.html",
