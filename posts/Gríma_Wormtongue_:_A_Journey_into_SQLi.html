@@ -826,7 +826,9 @@ query = f"SELECT * FROM users WHERE username = '{username}'"</code></pre>
                 <ul>
                     <li>Use <code>CONCAT()</code> to combine multiple columns into one: <code>CONCAT(username,':',password)</code></li>
                     <li>Use <code>GROUP_CONCAT()</code> (MySQL) to get multiple rows in one result</li>
-                    <li>Filter out system databases: <code>WHERE table_schema NOT IN ('information_schema','mysql','performance_schema')</code></li>
+                    <li>Filter out system databases: <code>WHERE table_schema NOT IN 
+                    <br>
+                    ('information_schema','mysql','performance_schema')</code></li>
                     <li>Look for interesting table names: users, admin, passwords, secrets, credit_cards, etc.</li>
                 </ul>
 
