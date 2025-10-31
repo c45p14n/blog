@@ -29,8 +29,8 @@ cd blog
 Open index.html in your browser, or start a simple local server:
 
 # Using Python 3
-python3 -m http.server 8000
-# Visit http://localhost:8000
+```python3 -m http.server 8000```
+Visit http://localhost:8000
 
 ### 3️⃣ Add a New Post
 
@@ -70,5 +70,3 @@ MIT License
 © 2025 c45p14n. All rights reserved.
 
 ✨ Built with simplicity in mind by c45p14n
-
-.
