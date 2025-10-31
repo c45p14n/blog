@@ -13,7 +13,6 @@ A simple and lightweight static blog built with HTML, CSS, and JavaScript.
 ├── index.html
 ├── style.css
 └── scripts.js
-
 ```
 
 ## 🚀 Getting Started
@@ -34,29 +33,29 @@ Visit http://localhost:8000
 
 ### 3️⃣ Add a New Post
 
-    Create a new .html or .md file inside the posts/ folder.
+- Create a new .html or .md file inside the posts/ folder.
 
-    Link it in your index.html navigation or post list.
+- Link it in your index.html navigation or post list.
 
-    (Optional) Add images to imgs/ and reference them in your post.
+- (Optional) Add images to imgs/ and reference them in your post.
 
 ## 🎨 Features
 
-    100% static — no backend required
+- 100% static — no backend required
 
-    Mobile-friendly responsive design
+- Mobile-friendly responsive design
 
-    Simple and minimal layout
+- Simple and minimal layout
 
-    Easy post management
+- Easy post management
 
-    Fast load times
+- Fast load times
 
 ## 💡 Future Enhancements
 
-    Dark mode toggle
+- Dark mode toggle
 
-    Comment integration (e.g., Disqus or Staticman)
+- Comment integration (e.g., Disqus or Staticman)
 
 ## 🤝 Contributing
 
