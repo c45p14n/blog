@@ -4,6 +4,7 @@ A simple and lightweight static blog built with HTML, CSS, and JavaScript.
 
 ## 📂 Project Structure
 
+```
 .
 ├── css/
 ├── scripts/
@@ -13,14 +14,17 @@ A simple and lightweight static blog built with HTML, CSS, and JavaScript.
 ├── style.css
 └── scripts.js
 
+```
+
 ## 🚀 Getting Started
 
 ### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/c45p14n/blog.git
 cd blog
+```
 
-2️⃣ Run Locally
+### 2️⃣ Run Locally
 
 Open index.html in your browser, or start a simple local server:
 
@@ -28,7 +32,7 @@ Open index.html in your browser, or start a simple local server:
 python3 -m http.server 8000
 # Visit http://localhost:8000
 
-3️⃣ Add a New Post
+### 3️⃣ Add a New Post
 
     Create a new .html or .md file inside the posts/ folder.
 
@@ -36,7 +40,7 @@ python3 -m http.server 8000
 
     (Optional) Add images to imgs/ and reference them in your post.
 
-🎨 Features
+## 🎨 Features
 
     100% static — no backend required
 
@@ -48,18 +52,18 @@ python3 -m http.server 8000
 
     Fast load times
 
-💡 Future Enhancements
+## 💡 Future Enhancements
 
     Dark mode toggle
 
     Comment integration (e.g., Disqus or Staticman)
 
-🤝 Contributing
+## 🤝 Contributing
 
 Pull requests are welcome!
 If you find a bug or have an idea, open an issue with details and screenshots if possible.
 
-📄 License
+## 📄 License
 
 MIT License
 
