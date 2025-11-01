@@ -1,5 +1,12 @@
 [
     {
+        "title": "SQLMap : Teaching legacy apps new ways to cry",
+        "date": "2025-11-1",
+        "excerpt": "",
+        "file": "posts/SQLMap_:_Teaching_legacy_apps_new_ways_to_cry.html",
+        "tags": ["programming", "database", "tools", "owasp", "note", "course"]
+    },
+    {
         "title": "Down the Rabbit Hole : How Social Media Alice'd Your Brain",
         "date": "2025-10-30",
         "excerpt": "",

