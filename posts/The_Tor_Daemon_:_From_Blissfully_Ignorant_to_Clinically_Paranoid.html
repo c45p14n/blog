@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Tor Daemon : From Blissfully Ignorant to Clinically Paranoid | Caspian</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            <article>
+                <div class="post-header">
+                    <h1>The Tor Daemon : From Blissfully Ignorant to Clinically Paranoid</h1>
+                    <div class="post-meta">November 1, 2025</div>
+                </div>
+                <div class="post-content">
+    <p>
+        Welcome, curious soul. You're about to learn how to use software that was literally created by the U.S. Navy 
+        to hide military communications, then released to the public because—and I'm paraphrasing here—"if only spies 
+        use it, it's really obvious who the spies are." Brilliant 4D chess move, honestly. Now it's used by everyone 
+        from journalists and activists to people who just really don't want their ISP knowing they're every move.
+    </p>
+
+    <p>
+        Tor (The Onion Router) was born in the mid-1990s at the Naval Research Laboratory, because apparently the 
+        military-industrial complex occasionally produces things that don't explode. It was designed to protect 
+        government communications, then morphed into a tool for everyone who believes surveillance capitalism is 
+        probably not great, actually. The irony of using Navy-funded software to hide from the government is not 
+        lost on anyone, but here we are.
+    </p>
+
+    <p>
+        By the end of this guide, you'll either be a privacy ninja or questioning why you didn't just use a VPN like 
+        normies. Spoiler: because VPNs are just "trust me bro" with a monthly subscription. At least with Tor, the 
+        trust is distributed across thousands of volunteers who probably aren't all working for the same three-letter 
+        agency. Probably.
+    </p>
+
+    <p>
+        Let's embark on this journey from "I just want privacy" to "I'm running my own entry nodes and sleeping in a 
+        Faraday cage." Fun fact: the Faraday cage was invented in 1836, which means people have been paranoid about 
+        electromagnetic surveillance for almost 200 years. You're in good company. Buckle up, buttercup.
+    </p>
+    <hr>
+
+    <h2>Stage 1: "Baby's First Onion Router"</h2>
+    
+    <p>
+        Before we dive into the paranoia pool, let's understand what Tor actually is. Tor (The Onion Router) routes 
+        your traffic through multiple nodes—typically three—encrypting each layer like an onion. Why three? Because 
+        two isn't paranoid enough, and four would be overkill. Just kidding, we'll get to custom circuit lengths 
+        later, you beautiful paranoid creature.
+    </p>
+
+    <h3>Installation (The Easy Part):</h3>
+    <pre><code>sudo pacman -S tor</code></pre>
+
+    <p>
+        Congratulations, you've installed software. Your mother would be proud. Now let's make it actually do 
+        something.
+    </p>
+
+    <h3>Starting the Daemon:</h3>
+    <pre><code>sudo systemctl start tor
+sudo systemctl enable tor</code></pre>
+
+    <p>
+        The second command makes it start on boot because manually starting daemons is what separates us from 
+        Gentoo users who compile everything manually and claim it's "optimized."
+    </p>
+
+    <h3>Verify It's Running:</h3>
+    <pre><code>sudo systemctl status tor</code></pre>
+
+    <p>
+        If you see green text saying "active (running)," you're golden. If not, welcome to the debugging phase—
+        population: you, the logs, and your growing sense of regret.
+    </p>
+
+    <h3>Testing Your New Toy:</h3>
+    <pre><code>curl --socks5-hostname 127.0.0.1:9050 https://check.torproject.org</code></pre>
+
+    <p>
+        If this tells you you're using Tor, congratulations! You're now anonymous. Well, not really, but we'll get 
+        there. Baby steps.
+    </p>
+
+    <hr>
+
+    <h2>Stage 2: "Wait, I Can Configure This?"</h2>
+
+    <p>
+        The config file lives at <code>/etc/tor/torrc</code>. This humble text file is about to become your new 
+        obsession. Open it:
+    </p>
+
+    <pre><code>sudo vim /etc/tor/torrc</code></pre>
+
+    <p>
+        (If you use nano, that's fine. I won't judge. Out loud. To your face.)
+    </p>
+
+    <h3>Basic SOCKS Configuration:</h3>
+    <p>
+        By default, Tor creates a SOCKS5 proxy on <code>127.0.0.1:9050</code>. Want a different port? Be my guest:
+    </p>
+
+    <pre><code>SocksPort 9150</code></pre>
+
+    <h3>Multiple SOCKS Ports (Overachiever Alert):</h3>
+    <pre><code>SocksPort 9050
+SocksPort 9051 IsolateDestAddr
+SocksPort 9052 IsolateDestPort
+SocksPort 9053 IsolateDestAddr IsolateDestPort</code></pre>
+
+    <p>
+        The <code>IsolateDestAddr</code> and <code>IsolateDestPort</code> flags create separate circuits for 
+        different destinations. Why? Because you're paranoid, and that's why we're here.
+    </p>
+
+    <h3>Wait, What Do These Isolation Flags Actually Do?</h3>
+    
+    <p>
+        Glad you asked. By default, Tor reuses circuits for multiple connections to save time and resources. This 
+        is efficient but potentially dangerous because multiple sites could correlate your traffic. The isolation 
+        flags fix this by creating separate circuits based on different criteria.
+    </p>
+
+    <h4>IsolateDestAddr (Separate Circuit Per Destination IP):</h4>
+    <pre><code>SocksPort 9051 IsolateDestAddr</code></pre>
+
+    <p>
+        Each unique destination IP address gets its own circuit. If you visit <code>example.com</code> (IP: 1.2.3.4) 
+        and then <code>example.org</code> (IP: 5.6.7.8), they'll use different circuits. This prevents the two 
+        sites from correlating that the same "person" (same circuit) visited both.
+    </p>
+
+    <p><strong>Example scenario:</strong></p>
+    <ul>
+        <li>You visit facebook.com through Circuit A</li>
+        <li>You visit twitter.com through Circuit B (different destination IP)</li>
+        <li>You visit facebook.com again—still uses Circuit A (same destination IP)</li>
+    </ul>
+
+    <p>
+        This is useful when you don't want different websites to be able to correlate your visits through timing 
+        analysis or exit node surveillance.
+    </p>
+
+    <h4>IsolateDestPort (Separate Circuit Per Port):</h4>
+    <pre><code>SocksPort 9052 IsolateDestPort</code></pre>
+
+    <p>
+        Each unique destination port gets its own circuit. Connecting to <code>example.com:80</code> (HTTP) and 
+        <code>example.com:443</code> (HTTPS) will use different circuits, even though it's the same IP address.
+    </p>
+
+    <p><strong>Example scenario:</strong></p>
+    <ul>
+        <li>You visit example.com:443 (HTTPS) through Circuit A</li>
+        <li>You visit example.com:80 (HTTP) through Circuit B (different port)</li>
+        <li>You visit another-site.com:443 through Circuit A (same port as first connection)</li>
+    </ul>
+
+    <p>
+        This helps when you're worried about port-based traffic analysis or when different services on the same 
+        server might be logging and correlating connections.
+    </p>
+
+    <h4>Combining Both (Maximum Isolation):</h4>
+    <pre><code>SocksPort 9053 IsolateDestAddr IsolateDestPort</code></pre>
+
+    <p>
+        Now each unique combination of IP address AND port gets its own circuit. <code>example.com:80</code> and 
+        <code>example.com:443</code> get different circuits. <code>example.com:443</code> and 
+        <code>other.com:443</code> also get different circuits. Maximum paranoia achieved.
+    </p>
+
+    <p><strong>Example scenario:</strong></p>
+    <ul>
+        <li>example.com:443 → Circuit A</li>
+        <li>example.com:80 → Circuit B (different port)</li>
+        <li>other.com:443 → Circuit C (different IP)</li>
+        <li>other.com:80 → Circuit D (different IP AND port)</li>
+    </ul>
+
+    <h4>Other Useful Isolation Flags:</h4>
+    <pre><code>SocksPort 9054 IsolateClientAddr
+SocksPort 9055 IsolateClientProtocol
+SocksPort 9056 IsolateSOCKSAuth</code></pre>
+
+    <ul>
+        <li><strong>IsolateClientAddr:</strong> Each source IP connecting to your SOCKS port gets separate circuits. 
+        Useful if multiple people/devices use your Tor instance.</li>
+        <li><strong>IsolateClientProtocol:</strong> SOCKS4, SOCKS4a, and SOCKS5 connections get separate circuits. 
+        Because apparently protocols matter to your threat model.</li>
+        <li><strong>IsolateSOCKSAuth:</strong> Different SOCKS username/password combinations get separate circuits. 
+        You can use this to manually control which requests share circuits.</li>
+    </ul>
+
+    <h4>The Nuclear Option (Isolate Everything):</h4>
+    <pre><code>SocksPort 9060 IsolateDestAddr IsolateDestPort IsolateClientAddr IsolateClientProtocol</code></pre>
+
+    <p>
+        Every. Single. Connection. Gets. Its. Own. Circuit. This is the "trust nothing" approach. Your latency will 
+        be terrible because Tor has to build a new circuit for literally every connection, but hey, at least nobody 
+        can correlate anything. Probably. Maybe. Correlation attacks are hard.
+    </p>
+
+    <h4>Practical Usage Example:</h4>
+    <p>Let's say you're running multiple services that need different isolation levels:</p>
+
+    <pre><code># Browser traffic - isolate per destination
+SocksPort 9050 IsolateDestAddr IsolateDestPort
+
+# Tor Browser - maximum isolation (it handles this internally anyway)
+SocksPort 9051 IsolateDestAddr IsolateDestPort IsolateClientProtocol
+
+# SSH connections - keep same circuit per destination for session stability
+SocksPort 9052
+
+# IRC/Chat - isolate per destination so different servers can't correlate
+SocksPort 9053 IsolateDestAddr</code></pre>
+
+    <p>
+        Point your browser to 9050, Tor Browser to 9051, SSH to 9052, and IRC client to 9053. Each service gets 
+        the isolation level appropriate for its use case. You're basically running a boutique Tor service at this 
+        point. Very fancy.
+    </p>
+
+    <h4>Performance vs Privacy Trade-off:</h4>
+    <p>
+        More isolation = more circuits = more overhead. Building circuits takes time (5-10 seconds each). If you 
+        isolate everything, expect your first connection to each new destination/port combo to be slow. Subsequent 
+        connections will reuse the circuit until it expires (default 10 minutes).
+    </p>
+
+    <p>
+        Choose your isolation based on your actual threat model. Hiding from advertisers? Basic isolation is fine. 
+        Hiding from nation-state adversaries? Go nuclear. Hiding from your ISP that you're torrenting? Wrong tool, 
+        buddy—use a VPN or seedbox.
+    </p>
+
+    <p>After any config change:</p>
+    <pre><code>sudo systemctl restart tor</code></pre>
+
+    <hr>
+
+    <h2>Stage 3: "More Nodes = More Paranoia (The Math Checks Out)"</h2>
+
+    <p>
+        So Tor uses three nodes by default: Entry (Guard), Middle, and Exit. "But what if three isn't enough?" I 
+        hear you ask while adjusting your tinfoil hat. Well, friend, you can't actually force MORE than three nodes 
+        in the path because that's how Tor's protocol works.
+    </p>
+
+    <p>
+        <strong>PLOT TWIST:</strong> You can't add more hops to a single circuit, but you can chain Tor with 
+        proxies or even another Tor instance. It's called "circuit chaining" and it's exactly as paranoid as it 
+        sounds.
+    </p>
+
+    <h3>Method 1: Tor Over Tor (Torception):</h3>
+    <p>
+        Run two Tor instances. The first connects to Tor normally, the second uses the first as an entry point.
+    </p>
+
+    <p>First Tor instance (default config, port 9050).</p>
+
+    <p>Second Tor instance config (<code>/etc/tor/torrc-secondary</code>):</p>
+    <pre><code>SocksPort 9051
+DataDirectory /var/lib/tor-secondary
+Socks5Proxy 127.0.0.1:9050</code></pre>
+
+    <p>Create the data directory:</p>
+    <pre><code>sudo mkdir /var/lib/tor-secondary
+sudo chown tor:tor /var/lib/tor-secondary</code></pre>
+
+    <p>Run the second instance:</p>
+    <pre><code>sudo -u tor tor -f /etc/tor/torrc-secondary</code></pre>
+
+    <p>
+        Now port 9051 goes through 6 nodes total: Entry1 → Middle1 → Exit1 → Entry2 → Middle2 → Exit2. 
+        Congratulations, you've doubled your latency and paranoia simultaneously.
+    </p>
+
+    <h3>Method 2: VPN → Tor → VPN (Maximum Overkill):</h3>
+    <p>
+        Connect to VPN1, route Tor through it, then use VPN2 as your exit. This is the privacy equivalent of 
+        wearing a disguise to buy another disguise. Excessive? Probably. Cool? Absolutely.
+    </p>
+
+    <p>Config for Tor → VPN exit:</p>
+    <pre><code>Socks5Proxy vpn-server.example.com:1080</code></pre>
+
+    <p>
+        Now your ISP sees VPN1, VPN1 sees Tor entry, Tor exit sees VPN2, and the destination sees VPN2. Nobody knows 
+        who you are, including probably yourself at this point.
+    </p>
+
+    <hr>
+
+    <h2>Stage 4: "Using Your Own Nodes (Trust No One, Not Even Strangers)"</h2>
+
+    <p>
+        Trust issues? Same. You can configure Tor to use specific nodes you control or trust. This is useful if you 
+        run your own relays or if you're that person who doesn't trust any relay they didn't personally compile.
+    </p>
+
+    <h3>Using Specific Entry Guards:</h3>
+    <pre><code>EntryNodes {FINGERPRINT1},{FINGERPRINT2},{FINGERPRINT3}
+StrictNodes 1</code></pre>
+
+    <p>
+        Replace <code>{FINGERPRINT1}</code> with actual relay fingerprints. Find relay fingerprints at 
+        <a href="https://metrics.torproject.org" class="linked-word">metrics.torproject.org</a>. The 
+        <code>StrictNodes 1</code> flag means "use ONLY these nodes or fail."
+    </p>
+
+    <h3>Using Your Own Exit Node:</h3>
+    <pre><code>ExitNodes {YOUR_EXIT_FINGERPRINT}
+StrictNodes 1</code></pre>
+
+    <p>
+        If you run your own exit relay (more on this later, you masochist), you can force all exits through it. 
+        Now your traffic exits from a node you control. The NSA is taking notes.
+    </p>
+
+    <h3>Using Specific Countries (Geoblocking, But Privacy Edition):</h3>
+    <pre><code>EntryNodes {de},{ch},{se}
+ExitNodes {nl},{is}
+StrictNodes 1</code></pre>
+
+    <p>
+        This uses entry nodes from Germany, Switzerland, or Sweden, and exit nodes from Netherlands or Iceland. 
+        Because apparently you have opinions about which governments you trust. Valid.
+    </p>
+
+    <h3>Excluding Countries (Because Politics):</h3>
+    <pre><code>ExcludeNodes {us},{gb},{ru},{cn}
+ExcludeExitNodes {us},{gb},{ru},{cn}
+StrictNodes 1</code></pre>
+
+    <p>
+        Avoid the Five Eyes, Russia, and China. Or any combination that matches your threat model. This is the 
+        privacy equivalent of reading restaurant health inspection scores.
+    </p>
+
+    <h3>Pro Tip—Family Flag:</h3>
+    <p>
+        If you run multiple relays, declare them as a family so Tor doesn't use them in the same circuit:
+    </p>
+    <pre><code>MyFamily {FINGERPRINT1},{FINGERPRINT2}</code></pre>
+
+    <p>This prevents you from becoming your own man-in-the-middle. Awkward.</p>
+
+    <hr>
+
+    <h2>Stage 5: "Using Bridges Without Giving Back (The Freeloader's Guide)"</h2>
+
+    <p>
+        Bridges are Tor relays not listed in the public directory. They're useful if someone (your ISP, the people
+        who serves you, your helicopter parent) is blocking Tor. You want to use bridges but NOT run one yourself? 
+        Okay, freeloader, I got you.
+    </p>
+
+    <h3>Getting Bridge Addresses:</h3>
+    <p>Visit <a href="https://bridges.torproject.org" class="linked-word">bridges.torproject.org</a> or email 
+    <code>bridges@torproject.org</code> (from Gmail or Riseup only, because spam).</p>
+
+    <h3>Configuring Bridge Mode:</h3>
+    <p>Add to your <code>torrc</code>:</p>
+    <pre><code>UseBridges 1
+Bridge obfs4 1.2.3.4:1234 FINGERPRINT cert=CERTIFICATESTRING iat-mode=0
+Bridge obfs4 5.6.7.8:5678 FINGERPRINT cert=ANOTHERSTRING iat-mode=0</code></pre>
+
+    <p>
+        Those long strings come from bridges.torproject.org. Just copy-paste them. The <code>obfs4</code> part 
+        makes your traffic look like random noise instead of Tor, which is harder to detect and block.
+    </p>
+    <p>
+        Install obfs4:
+
+    <h3>Using Snowflake Bridges (The Cool New Thing):</h3>
+    <pre><code>UseBridges 1
+ClientTransportPlugin snowflake exec /usr/bin/snowflake-client
+Bridge snowflake 192.0.2.3:80 2B280B23E1107BB62ABFC40DDCC8824814F80A72</code></pre>
+
+    <p>Install snowflake:</p>
+    <pre><code>sudo paru -S snowflake-client</code></pre>
+
+    <p>
+        Snowflake uses temporary proxies run by volunteers' browsers. It's peer-to-peer Tor bridges. Very Web3, 
+        much decentralized, wow.
+    </p>
+
+    <h3>Testing Your Bridge:</h3>
+    <pre><code>sudo journalctl -u tor -f</code></pre>
+
+    <p>
+        Look for "Bootstrapped 100%" in the logs. If you see it, you're connected through bridges. Your oppressive 
+        regime is crying right now.
+    </p>
+
+    <hr>
+
+    <h2>Stage 6: "Chaining with Your Own Proxy (Because Why Not?)"</h2>
+
+    <p>
+        Maybe you have a proxy server. Maybe it's a VPS in Iceland. Maybe it's your friend's Raspberry Pi. Either 
+        way, you can chain Tor with your own proxy for extra layers.
+    </p>
+
+    <h3>Proxy → Tor:</h3>
+    <p>Your traffic goes to your proxy first, then enters Tor:</p>
+    <pre><code>HTTPSProxy your-proxy.example.com:8080
+HTTPSProxyAuthenticator username:password</code></pre>
+
+    <p>Or for SOCKS proxies:</p>
+    <pre><code>Socks5Proxy your-proxy.example.com:1080
+Socks5ProxyUsername username
+Socks5ProxyPassword password</code></pre>
+
+    <h3>Tor → Proxy:</h3>
+    <p>
+        Traffic exits Tor, then goes through your proxy before hitting the destination. You'll need an exit node 
+        that allows this, or run your own exit (covered later, you brave soul).
+    </p>
+
+    <h3>The Triple Layer Cake:</h3>
+    <p>Proxy1 → Tor → Proxy2:</p>
+    <pre><code>HTTPSProxy proxy1.example.com:8080
+Socks5Proxy proxy2.example.com:1080</code></pre>
+
+    <p>
+        At this point, tracing your traffic requires a PhD in networking and several warrants. Your latency also 
+        measured in geological time periods, but that's the price of paranoia.
+    </p>
+
+    <hr>
+
+    <h2>Stage 7: "The Ultra-Paranoid Setup (Welcome to the Endgame)"</h2>
+
+    <p>
+        Alright, you've made it to the boss level. This is where we combine everything into a configuration that 
+        would make Edward Snowden nod approvingly. Or nervously. Hard to tell with paranoid people.
+    </p>
+
+    <h3>The Complete Paranoid Config:</h3>
+    <pre><code># Use bridges to hide Tor usage from ISP
+UseBridges 1
+ClientTransportPlugin obfs4 exec /usr/bin/obfs4proxy
+Bridge obfs4 1.2.3.4:1234 FINGERPRINT cert=CERT iat-mode=0
+
+# Use only trusted entry nodes from privacy-friendly countries
+EntryNodes {de},{ch},{is},{nl}
+ExcludeNodes {us},{gb},{au},{ca},{nz},{ru},{cn}
+ExcludeExitNodes {us},{gb},{au},{ca},{nz},{ru},{cn}
+StrictNodes 1
+
+# Multiple isolated SOCKS ports for different apps
+SocksPort 9050 IsolateDestAddr IsolateDestPort
+SocksPort 9051 IsolateDestAddr IsolateDestPort
+SocksPort 9052 IsolateDestAddr IsolateDestPort
+
+# Increase circuit randomness
+NewCircuitPeriod 300
+MaxCircuitDirtiness 600
+
+# More entry guards for better anonymity
+NumEntryGuards 8
+
+# Disable circuits that could compromise anonymity
+ExcludeSingleHopRelays 1
+AllowSingleHopCircuits 0
+
+# Safe logging (reduces log detail)
+SafeLogging 1
+LogTimeGranularity 1
+
+# Disable DNS on exit (use DNS port internally only)
+DNSPort 5353
+AutomapHostsOnResolve 1
+AutomapHostsSuffixes .onion,.exit
+</code></pre>
+
+    <h3>Breaking Down the Paranoia:</h3>
+    <ul>
+        <li><strong>Bridges:</strong> Your ISP can't see you're using Tor</li>
+        <li><strong>Country exclusions:</strong> Avoiding Five Eyes, Russia, and China</li>
+        <li><strong>Isolated SOCKS:</strong> Each application gets its own circuit</li>
+        <li><strong>NewCircuitPeriod:</strong> Get fresh circuits every 5 minutes</li>
+        <li><strong>NumEntryGuards:</strong> More entry options makes traffic analysis harder</li>
+        <li><strong>SafeLogging:</strong> Logs don't contain identifying information</li>
+        <li><strong>DNSPort:</strong> All DNS goes through Tor, no leaks</li>
+    </ul>
+
+    <h3>Using It with Applications:</h3>
+    <p>Firefox (using SOCKS5):</p>
+    <ul>
+        <li>Preferences → Network Settings → Manual Proxy</li>
+        <li>SOCKS Host: 127.0.0.1, Port: 9050</li>
+        <li>Enable "SOCKS v5" and "Proxy DNS when using SOCKS v5"</li>
+    </ul>
+
+    <p>Command line apps:</p>
+    <pre><code>curl --socks5-hostname 127.0.0.1:9050 https://example.com
+wget -e use_proxy=yes -e socks_proxy=127.0.0.1:9050 https://example.com
+ssh -o ProxyCommand='nc -x 127.0.0.1:9050 %h %p' user@example.com</code></pre>
+
+    <h3>System-Wide Tor (Nuclear Option):</h3>
+    <p>Install and configure <code>torsocks</code>:</p>
+    <pre><code>sudo pacman -S torsocks</code></pre>
+
+    <p>Run any application through Tor:</p>
+    <pre><code>torsocks firefox
+torsocks ssh user@example.com
+torsocks your-sketchy-app</code></pre>
+
+    <h3>Transparent Proxy (Because You're Insane):</h3>
+    <p>Route ALL system traffic through Tor automatically:</p>
+    <pre><code>TransPort 9040
+DNSPort 5353
+VirtualAddrNetworkIPv4 10.192.0.0/10</code></pre>
+
+    <p>Then configure iptables to redirect all traffic:</p>
+    <pre><code>sudo iptables -t nat -A OUTPUT -p tcp -j REDIRECT --to-ports 9040
+sudo iptables -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports 5353</code></pre>
+
+    <p>
+        Now EVERYTHING goes through Tor. Your entire system is torified. Your latency is also 500ms minimum, but 
+        hey, you're anonymous. Probably. Maybe. Let's not think too hard about correlation attacks.
+    </p>
+
+    <hr>
+
+    <h2>Stage 8: "Vanguards and Advanced Threats (When Three Letters Come Knocking)"</h2>
+
+    <p>
+        So you've read about cases where law enforcement deanonymized Tor users. Maybe you're wondering if your 
+        paranoid setup is actually paranoid enough. Spoiler alert: probably not. Let's talk about real attacks and 
+        real defenses.
+    </p>
+
+    <h3>The Threat: Guard Discovery Attacks</h3>
+
+    <p>
+        Here's the thing nobody tells you: your entry guard is kind of a big deal. Tor uses the same entry guards 
+        for 2-3 months to prevent certain attacks. But this also means if an adversary can figure out which guard 
+        you're using, they can monitor it and correlate your traffic patterns over time.
+    </p>
+
+    <p>
+        The attack works like this: An adversary (let's say a well-funded three-letter agency) runs or compromises 
+        multiple middle and exit nodes. When you connect to a hidden service they're monitoring, they can try to 
+        force you to build circuits through nodes they control. By analyzing timing patterns across multiple 
+        connections, they can statistically determine which guard node you're using.
+    </p>
+
+    <p>Once they know your guard, they can:</p>
+    <ul>
+        <li>Monitor traffic entering that guard to find patterns matching your activity</li>
+        <li>Correlate connection times with your actual internet connection</li>
+        <li>Eventually link your Tor activity to your real IP address</li>
+    </ul>
+
+    <p>This isn't theoretical. This is how some real-world cases have been solved.</p>
+
+    <h3>Enter: Vanguards</h3>
+
+    <p>
+        Vanguards is an additional security layer specifically designed to protect against guard discovery attacks. 
+        Instead of just using entry guards, it adds TWO more layers of guards (Layer 2 and Layer 3), making it 
+        exponentially harder for an adversary to manipulate your circuits.
+    </p>
+
+    <p>Install vanguards:</p>
+    <pre><code>git clone https://github.com/mikeperry-tor/vanguards.git
+cd vanguards
+pip3 install -r requirements.txt
+python3 setup.py install</code></pre>
+
+    <h3>Configuring Vanguards:</h3>
+
+    <p>First, make sure your control port is set up in <code>/etc/tor/torrc</code>:</p>
+    <pre><code>ControlPort 9051
+CookieAuthentication 1</code></pre>
+
+    <p>Restart Tor:</p>
+    <pre><code>sudo systemctl restart tor</code></pre>
+
+    <p>Run vanguards:</p>
+    <pre><code>sudo vanguards</code></pre>
+
+    <p>
+        Vanguards will connect to your Tor control port and automatically manage additional guard layers. You'll 
+        see output showing it's monitoring and protecting your circuits.
+    </p>
+
+    <h3>Running Vanguards as a Service (The Proper Way):</h3>
+
+    <p>Create a systemd service file at <code>/etc/systemd/system/vanguards.service</code>:</p>
+    <pre><code>[Unit]
+Description=Vanguards Tor guard protection
+After=tor.service
+Requires=tor.service
+
+[Service]
+Type=simple
+User=tor
+ExecStart=/usr/bin/vanguards
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+
+    <p>Enable and start it:</p>
+    <pre><code>sudo systemctl daemon-reload
+sudo systemctl enable vanguards
+sudo systemctl start vanguards
+sudo systemctl status vanguards</code></pre>
+
+    <p>
+        Now vanguards runs automatically in the background, constantly protecting you from guard discovery attacks. 
+        You're welcome.
+    </p>
+
+    <h3>Additional Vanguards Configuration:</h3>
+
+    <p>
+        Vanguards has a config file at <code>/etc/vanguards/vanguards.conf</code> (or wherever you installed it). 
+        Some useful options:
+    </p>
+
+    <pre><code>[Global]
+# Enable state file to persist vanguard selection across restarts
+state_file = /var/lib/tor/vanguards.state
+
+# Log level (DEBUG, INFO, NOTICE, WARN, ERROR)
+log_level = NOTICE
+
+# Bandguards: Detect bandwidth-based side channel attacks
+bandguards_enabled = True
+
+# Rendguard: Protect against rendezvous point attacks on hidden services
+rendguard_enabled = True</code></pre>
+
+    <h3>The Correlation Attack Problem</h3>
+
+    <p>
+        Even with vanguards, sophisticated adversaries can still perform correlation attacks. If someone can monitor 
+        BOTH your internet connection AND the destination (or exit node), they can correlate traffic patterns:
+    </p>
+
+    <ul>
+        <li>You send 1.2 MB at 10:00:00</li>
+        <li>The destination receives 1.2 MB at 10:00:03 (accounting for Tor latency)</li>
+        <li>You send 500 KB at 10:00:10</li>
+        <li>The destination receives 500 KB at 10:00:13</li>
+    </ul>
+
+    <p>
+        Do this enough times and statistical analysis can link you to the destination with high confidence. This is 
+        called a "traffic confirmation attack" and it's how some sophisticated operations get caught.
+    </p>
+
+    <h3>Defending Against Correlation Attacks:</h3>
+
+    <h4>1. Add Cover Traffic (Chaff):</h4>
+    <p>
+        Unfortunately, Tor doesn't natively support this well. Some research projects exist but aren't production-
+        ready. The idea is to send random encrypted data to make traffic patterns harder to analyze.
+    </p>
+
+    <h4>2. Use Timing Obfuscation:</h4>
+    <p>
+        Don't send data in predictable patterns. If you're manually transferring files, add random delays between 
+        chunks:
+    </p>
+    <pre><code>for file in *; do
+    torsocks scp "$file" user@destination:/path/
+    sleep $((RANDOM % 300))  # Random delay 0-5 minutes
+done</code></pre>
+
+    <h4>3. Multi-Hop VPN + Tor (Nested Chains):</h4>
+    <p>The classic defense in depth approach:</p>
+    <pre><code>Your Computer → VPN1 → VPN2 → Tor → Destination</code></pre>
+
+    <p>
+        Now to correlate your traffic, an adversary needs to compromise multiple VPN providers AND monitor Tor. 
+        Significantly harder, though not impossible for nation-state actors.
+    </p>
+
+    <p>Configure the first VPN normally, then add to <code>torrc</code>:</p>
+    <pre><code>Socks5Proxy vpn2-server:1080
+Socks5ProxyUsername yourusername
+Socks5ProxyPassword yourpassword</code></pre>
+
+    <h4>4. Use Bridges + Pluggable Transports:</h4>
+    <p>
+        Makes it harder for your ISP to even know you're using Tor, which prevents them from being a correlation 
+        endpoint:
+    </p>
+    <pre><code>UseBridges 1
+ClientTransportPlugin obfs4 exec /usr/bin/obfs4proxy
+ClientTransportPlugin snowflake exec /usr/bin/snowflake-client
+Bridge obfs4 [ADDRESS:PORT] [FINGERPRINT] cert=[CERT] iat-mode=0</code></pre>
+
+    <h4>5. Vary Your Usage Patterns:</h4>
+    <p>Don't do things at the same time every day. Don't transfer the same file sizes. Be unpredictable.</p>
+
+    <h3>Hidden Service Specific Protections:</h3>
+
+    <p>If you're running a hidden service, add these to your <code>torrc</code>:</p>
+
+    <pre><code># Use vanguards (make sure vanguards service is running)
+HiddenServiceSingleHopMode 0
+HiddenServiceNonAnonymousMode 0
+
+# Limit descriptor uploads to reduce attack surface
+HiddenServiceNumIntroductionPoints 3
+
+# Enable v3 only (v2 is deprecated and less secure)
+HiddenServiceVersion 3</code></pre>
+
+    <h3>The Reality Check:</h3>
+
+    <p>
+        Let's be honest: if a nation-state with unlimited resources specifically targets YOU, you're probably 
+        screwed. But that's not most people's threat model. These defenses protect against:
+    </p>
+
+    <ul>
+        <li>Mass surveillance programs (dragnet surveillance)</li>
+        <li>ISP logging and correlation</li>
+        <li>Moderate-resource adversaries</li>
+        <li>Passive traffic analysis</li>
+        <li>Automated deanonymization attempts</li>
+    </ul>
+
+    <p>They DON'T protect against:</p>
+    <ul>
+        <li>Compromised hardware/software on your machine</li>
+        <li>Social engineering and human error</li>
+        <li>Browser or application vulnerabilities</li>
+        <li>Physical surveillance</li>
+        <li>A three-letter agency with a warrant, a time machine, and infinite budget</li>
+    </ul>
+
+    <h3>Operational Security (OPSEC) Matters More:</h3>
+
+    <p>
+        You can have the most hardened Tor setup in the world, but if you:
+    </p>
+    <ul>
+        <li>Use the same username across clearnet and darknet</li>
+        <li>Pay for things with your real credit card</li>
+        <li>Post at the same times you're usually online</li>
+        <li>Use identifying writing patterns or share personal details</li>
+        <li>Have malware on your computer</li>
+    </ul>
+
+    <p>...then your fancy Tor setup won't save you. Technology is one layer. Behavior is everything.</p>
+
+    <h3>Keep Tor Updated:</h3>
+    <p>
+        Security vulnerabilities are found and patched regularly. Always run the latest version:
+    </p>
+    <pre><code>sudo pacman -Syu tor</code></pre>
+
+    <p>Check your version:</p>
+    <pre><code>tor --version</code></pre>
+
+    <p>
+        If it's more than a few months old, you're running outdated software with known vulnerabilities. Update it. 
+        Now. I'll wait.
+    </p>
+
+    <hr>
+
+    <h2>Stage 9: "Contributing Back (Because Guilt Is a Powerful Motivator)"</h2>
+
+    <p>
+        Okay, you've been freeloading long enough. Time to run a relay and contribute to the network you've been 
+        leeching off of. Don't worry, we'll start gentle.
+    </p>
+
+    <h3>Basic Middle Relay:</h3>
+    <pre><code>ORPort 9001
+Nickname YourAwesomeRelay
+ContactInfo your-email@example.com
+RelayBandwidthRate 5 MB
+RelayBandwidthBurst 10 MB</code></pre>
+
+    <p>Port forwarding time! Forward port 9001 TCP on your router:</p>
+    <pre><code>sudo ufw allow 9001/tcp</code></pre>
+
+    <p>Restart Tor and check logs:</p>
+    <pre><code>sudo systemctl restart tor
+sudo journalctl -u tor -f</code></pre>
+
+    <p>
+        Look for "Self-testing indicates your ORPort is reachable from the outside." That means you're now part 
+        of the network. Your relay will show up on 
+        <a href="https://metrics.torproject.org/rs.html" class="linked-word">metrics.torproject.org</a> in a few 
+        hours.
+    </p>
+
+    <h3>Running a Bridge (The Helpful Rebel):</h3>
+    <pre><code>BridgeRelay 1
+ORPort 443
+ServerTransportPlugin obfs4 exec /usr/bin/obfs4proxy
+ExtORPort auto
+ContactInfo your-email@example.com
+Nickname YourBridge</code></pre>
+
+    <p>Install obfs4proxy:</p>
+    <pre><code>sudo paru -S obfs4proxy</code></pre>
+
+    <p>
+        Bridges help people in censored countries. You're basically running an underground railroad for internet 
+        traffic. Feel good about yourself.
+    </p>
+
+    <h3>Exit Relay (The Nuclear Option):</h3>
+    <p>
+        <strong>READ THIS FIRST:</strong> Exit relays come with legal risks. Your IP shows up as the source of 
+        traffic. DMCA notices, abuse complaints, and possibly police visits are part of the package. Only do this 
+        if you have:
+    </p>
+    <ul>
+        <li>A dedicated server (not your home connection, you madman)</li>
+        <li>A hosting provider that allows Tor exits</li>
+        <li>Thick skin for abuse emails</li>
+        <li>Understanding of your local laws</li>
+        <li>A good relationship with your ISP (or a really bad one you want to test)</li>
+    </ul>
+
+    <p>Reduced exit policy (allows web traffic only):</p>
+    <pre><code>ExitRelay 1
+ExitPolicy accept *:80
+ExitPolicy accept *:443
+ExitPolicy reject *:*
+
+DirPort 9030
+ORPort 9001
+
+ContactInfo your-email@example.com abuse@example.com
+Nickname YourExitRelay</code></pre>
+
+    <p>
+        This allows exits on ports 80 and 443 (HTTP/HTTPS) only, rejecting everything else. It's a "reduced exit" 
+        that minimizes abuse while still being useful.
+    </p>
+
+    <p>
+        Set up a reverse DNS (PTR record) for your IP pointing to your relay's nickname. Send your ISP a heads-up 
+        email. Maybe light a candle. Pray to the privacy gods. You're in for a wild ride.
+    </p>
+
+    <hr>
+
+    <h2>Stage 10: "Hidden Services (Your Own .onion Empire)"</h2>
+
+    <p>
+        Want to host something accessible only through Tor? a very legal platform? Anonymous blog? Black market 
+        for rare Arch Linux stickers? (Just kidding. Unless...?)
+    </p>
+
+    <h3>Basic Hidden Service:</h3>
+    <pre><code>HiddenServiceDir /var/lib/tor/hidden_service/
+HiddenServicePort 80 127.0.0.1:8080</code></pre>
+
+    <p>This forwards port 80 (HTTP) to your local web server on port 8080.</p>
+
+    <p>Restart Tor:</p>
+    <pre><code>sudo systemctl restart tor</code></pre>
+
+    <p>Get your .onion address:</p>
+    <pre><code>sudo cat /var/lib/tor/hidden_service/hostname</code></pre>
+
+    <p>You'll get something like <code>thisisjustarandomstring.onion</code>. That's your site.</p>
+
+    <p>Start a web server:</p>
+    <pre><code>python -m http.server 8080</code></pre>
+
+    <p>Visit your .onion in Tor Browser. You're now a dark web entrepreneur. Mom would be... confused.</p>
+
+    <h3>Multiple Hidden Services:</h3>
+    <pre><code>HiddenServiceDir /var/lib/tor/service1/
+HiddenServicePort 80 127.0.0.1:8080
+
+HiddenServiceDir /var/lib/tor/service2/
+HiddenServicePort 80 127.0.0.1:8081
+
+HiddenServiceDir /var/lib/tor/service3/
+HiddenServicePort 22 127.0.0.1:22</code></pre>
+
+    <p>
+        Multiple services, each with its own .onion address. The third one exposes SSH over Tor. Because normal SSH 
+        wasn't secure enough, apparently.
+    </p>
+
+    <h3>v3 Onion with Vanity Address (The Peacock Approach):</h3>
+    <p>Want a custom .onion address? Install <code>mkp224o</code>:</p>
+    <pre><code>git clone https://github.com/cathugger/mkp224o.git
+cd mkp224o
+./autogen.sh
+./configure
+make</code></pre>
+
+    <p>Generate addresses with a prefix:</p>
+    <pre><code>./mkp224o arch linux -d onions -n 1</code></pre>
+
+    <p>
+        This searches for .onion addresses starting with "arch" or "linux". It takes forever because math is hard. 
+        Each character you add multiplies the difficulty by 32. Want a 7-character prefix? Better have a decade 
+        and a nuclear power plant.
+    </p>
+
+    <hr>
+
+    <h2>Stage 11: "The Control Port (Scripting Your Way to Anonymity)"</h2>
+
+    <p>Want to control Tor programmatically? Of course you do, you control freak.</p>
+
+    <pre><code>ControlPort 9051
+HashedControlPassword 16:872860B76453A77D60CA2BB8C1A7042072093276A3D701AD684053EC4C</code></pre>
+
+    <p>Generate that hash:</p>
+    <pre><code>tor --hash-password "your_secure_password"</code></pre>
+
+    <p>Now connect and control Tor:</p>
+    <pre><code>telnet 127.0.0.1 9051
+AUTHENTICATE "your_secure_password"
+SIGNAL NEWNYM
+GETINFO circuit-status</code></pre>
+
+    <p>
+        <code>SIGNAL NEWNYM</code> gets you a new circuit. It's like hitting "New Identity" in Tor Browser. Great 
+        for scripts or when you need to pretend to be someone else. Which you're already doing. Inception.
+    </p>
+
+    <h3>Scripting with Python (Because You're Fancy):</h3>
+    <p>Install the stem library:</p>
+    <pre><code>pip install stem</code></pre>
+
+    <p>Control Tor with Python:</p>
+    <pre><code>from stem import Signal
+from stem.control import Controller
+
+with Controller.from_port(port=9051) as controller:
+    controller.authenticate(password="your_secure_password")
+    controller.signal(Signal.NEWNYM)
+    print("New circuit requested!")</code></pre>
+
+    <p>
+        Now you can automate identity changes, monitor circuits, and generally be a Tor automation wizard. Your 
+        script collection is growing nicely, you magnificent nerd.
+    </p>
+
+    <hr>
+
+    <h2>Stage 12: "Troubleshooting (Because Nothing Ever Works)"</h2>
+
+    <h3>Tor Won't Start:</h3>
+    <pre><code>sudo journalctl -u tor -n 100</code></pre>
+    <p>Read the logs. They're usually helpful. Sometimes.</p>
+
+    <h3>Config Syntax Errors:</h3>
+    <pre><code>tor --verify-config</code></pre>
+    <p>Checks your torrc without starting Tor. Like a linter, but for paranoia.</p>
+
+    <h3>Port Already in Use:</h3>
+    <pre><code>sudo netstat -tulpn | grep :9050
+sudo lsof -i :9050</code></pre>
+    <p>Find the squatter and evict them. With prejudice.</p>
+
+    <h3>Slow Circuits:</h3>
+    <p>Tor is slow by nature. But if it's REALLY slow:</p>
+    <pre><code>ExcludeNodes {SLOW_COUNTRY_CODES}
+UseEntryGuards 1
+NumEntryGuards 8</code></pre>
+
+    <h3>Bridge Not Connecting:</h3>
+    <pre><code>sudo journalctl -u tor -f</code></pre>
+    <p>
+        Look for "Bootstrapped" messages. If it's stuck at a low percentage, try different bridges. Not all bridges 
+        work everywhere.
+    </p>
+
+    <h3>DNS Leaks:</h3>
+    <p>Test with:</p>
+    <pre><code>curl --socks5-hostname 127.0.0.1:9050 https://check.torproject.org/api/ip</code></pre>
+    <p>
+        If it shows your real IP, you have leaks. Make sure you're using <code>--socks5-hostname</code> and not 
+        just <code>--socks5</code>.
+    </p>
+
+    <hr>
+
+    <h2>Stage 13: "Final Boss—Maximum Paranoia Checklist"</h2>
+
+    <p>You've made it to the end. Here's your paranoid checklist:</p>
+
+    <ul>
+        <li>✓ Tor installed and running</li>
+        <li>✓ Using bridges to hide Tor usage</li>
+        <li>✓ Excluding Five Eyes countries</li>
+        <li>✓ Multiple isolated SOCKS ports</li>
+        <li>✓ Custom entry/exit nodes or countries</li>
+        <li>✓ Chained with VPN or proxy</li>
+        <li>✓ Safe logging enabled</li>
+        <li>✓ Regular circuit rotation</li>
+        <li>✓ Applications configured to use SOCKS5</li>
+        <li>✓ DNS going through Tor</li>
+        <li>✓ Running a relay to give back</li>
+        <li>✓ Hidden service for your anonymous blog</li>
+        <li>✓ Control port secured with password</li>
+        <li>✓ Scripts to automate identity changes</li>
+        <li>✓ Tinfoil hat properly adjusted</li>
+    </ul>
+
+    <hr>
+
+    <h2>The Onion's Final Layer</h2>
+
+    <p>
+        Congratulations. You've gone from "Tor is a browser, right?" to "I'm running a bridge relay through a VPN 
+        chain with country-specific exit policies and automated circuit rotation." You're either the most secure 
+        person on the internet, or the most paranoid. Probably both.
+    </p>
+
+    <p>
+        Remember: Security is a spectrum. You don't need to use every technique here. Match your setup to your 
+        threat model. Hiding from your ISP? Bridges and basic config. Hiding from nation-states? Full paranoid 
+        mode. Hiding from your mom because you're supposed to be doing homework? Maybe just use incognito mode.
+    </p>
+
+    <h3>Parting Wisdom:</h3>
+    <ul>
+        <li>Update regularly: <code>sudo pacman -Syu</code></li>
+        <li>Read the manual: <code>man tor</code></li>
+        <li>Monitor your relay: <a href="https://metrics.torproject.org" class="linked-word">metrics.torproject.org</a></li>
+        <li>Join the community: <a href="https://forum.torproject.net" class="linked-word">forum.torproject.net</a></li>
+        <li>Donate: <a href="https://donate.torproject.org" class="linked-word">donate.torproject.org</a></li>
+        <li>Stay paranoid, but not so paranoid you're useless</li>
+    </ul>
+
+    <p>
+        The command line is your friend. Tor is your ally. The NSA is probably your adversary. And you, dear reader, 
+        are now equipped to browse the internet like you're Jason Bourne trying to avoid Treadstone.
+    </p>
+
+    <p><em>
+        Now go forth and onion-route responsibly. Or irresponsibly. I'm a guide, not a cop. Actually, please do it 
+        responsibly. Running a malicious exit node is not what we're about here.
+    </em></p>
+
+    <hr>
+
+        <p>
+            <small>
+                P.S. If you actually implemented the full paranoid config and are now experiencing 2-second page 
+                loads, that's normal. Privacy ain't free, and it sure ain't fast. Welcome to the dark side. We have 
+                cookies, but they're all blocked.
+            </small>
+        </p>
+        <p>
+            <small>
+                P.P.S. Seriously though, don't run an exit relay on your home connection. Your ISP will send you 
+                scary letters and your neighbors will think you're running a hacking operation. Which, technically, 
+                you kind of are. But like, the legal kind. Mostly.
+            </small>
+        </p>
+                </div>
+            </article>
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>

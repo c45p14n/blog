@@ -1,5 +1,12 @@
 [
     {
+        "title": "The Tor Daemon : From Blissfully Ignorant to Clinically Paranoid",
+        "date": "2025-11-1",
+        "excerpt": "",
+        "file": "posts/The_Tor_Daemon_:_From_Blissfully_Ignorant_to_Clinically_Paranoid.html",
+        "tags": ["network", "tools", "course"]
+    },
+    {
         "title": "SQLMap : Teaching legacy apps new ways to cry",
         "date": "2025-11-1",
         "excerpt": "",
