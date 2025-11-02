@@ -1,5 +1,12 @@
 [
     {
+        "title": "Command Injection : Type here and watch it burn",
+        "date": "2025-11-3",
+        "excerpt": "",
+        "file": "posts/Command_Injection_:_Type_here_and_watch_it_burn.html",
+        "tags": ["database", "tools", "owasp", "note", "course"]
+    },
+    {
         "title": "The Tor Daemon : From Blissfully Ignorant to Clinically Paranoid",
         "date": "2025-11-1",
         "excerpt": "",
