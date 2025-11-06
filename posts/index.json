@@ -1,5 +1,12 @@
 [
     {
+        "title": "The Theater of Human Deceit : A Treatise on Social Manipulation",
+        "date": "2025-11-6",
+        "excerpt": "",
+        "file": "posts/The_Theater_of_Human_Deceit_:_A_Treatise_on_Social_Manipulation.html",
+        "tags": ["thoughts"]
+    },
+    {
         "title": "Template Treachery : SSTI The Silent Code Execution Flaw",
         "date": "2025-11-6",
         "excerpt": "",
