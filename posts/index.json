@@ -1,5 +1,12 @@
 [
     {
+        "title": "Template Treachery : SSTI The Silent Code Execution Flaw",
+        "date": "2025-11-6",
+        "excerpt": "",
+        "file": "posts/Template_Treachery_:_The_Silent_Code_Execution_Flaw.html",
+        "tags": ["owasp", "note", "course"]
+    },
+    {
         "title": "RCE : Giving New Meaning to ‘Open Source’",
         "date": "2025-11-3",
         "excerpt": "",

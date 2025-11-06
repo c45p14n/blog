@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Treachery : The Silent Code Execution Flaw | Caspian</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            <article>
+                <div class="post-header">
+                    <h1>Template Treachery : The Silent Code Execution Flaw</h1>
+                    <div class="post-meta">November 6, 2025</div>
+                </div>
+                <div class="post-content">
+
+                <h2>What is SSTI?</h2>
+
+                <p>
+                Server-Side Template Injection (SSTI) is what happens when developers
+                think, "Hey, you know what would be a GREAT idea? Let's take user input
+                and shove it directly into our template engine without any validation!
+                What could possibly go wrong?"
+                </p>
+
+                <p>Spoiler alert: <strong>Everything.</strong> Everything can go wrong.</p>
+
+                <p>
+                SSTI occurs when an attacker can inject template directives into a web
+                application, causing the server to execute arbitrary code. It's like
+                giving a stranger the keys to your house and being surprised when they
+                rearrange your furniture.
+                </p>
+
+                <h2>Vulnerable Code Example: Jinja2 Edition</h2>
+
+                <p>
+                Let's look at some beautiful, tragically vulnerable Python code using
+                Jinja2. Because nothing says "hack me" quite like directly rendering
+                user input:
+                </p>
+
+                <pre><code>from flask import Flask, request
+from jinja2 import Template
+
+app = Flask(__name__)
+
+@app.route('/greet')
+def greet():
+    name = request.args.get('name', 'World')
+    template = Template('Hello ' + name + '!')
+    return template.render()</code></pre>
+
+                <p>
+                Oh, what a masterpiece of security theatre! This code takes whatever the
+                user sends in the <code>name</code> parameter and renders it directly in
+                a Jinja2 template. The developer probably thought, "Users would NEVER
+                send anything malicious, right?"
+                </p>
+
+                <p><strong>Wrong.</strong> So deliciously wrong.</p>
+
+                <p>An attacker can simply send:</p>
+
+                <pre><code>GET /greet?name={{7*7}}</code></pre>
+
+                <p>
+                And guess what? The server responds with "Hello 49!" because Jinja2
+                helpfully evaluated that expression. But wait, there's more! Try this:
+                </p>
+
+                <pre><code>GET /greet?name={{config}}</code></pre>
+
+                <p>
+                Congratulations! You just dumped the Flask configuration. Information
+                disclosure at its finest!
+                </p>
+
+                <p>
+                Or, if you're feeling particularly spicy, achieve Remote Code Execution
+                (RCE) with:
+                </p>
+
+                <pre><code>{{''.__class__.__mro__[1].__subclasses__()[396]('whoami',shell=True,stdout=-1).communicate()}}</code></pre>
+
+                <p>
+                <em>(Your mileage may vary on that subclass index. Python versions are
+                like snowflakes - each one is different and annoying in its own special
+                way.)</em>
+                </p>
+
+                <h2>How to Fix This Dumpster Fire</h2>
+
+                <p>
+                Now, I know what you're thinking: "But how do I fix this catastrophic
+                security vulnerability?" Well, buckle up, because I'm about to blow your
+                mind with this revolutionary concept called <strong>NOT PUTTING USER
+                INPUT DIRECTLY INTO TEMPLATES</strong>.
+                </p>
+
+                <p>Here's the fixed version, for those who enjoy secure code:</p>
+
+                <pre><code>from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/greet')
+def greet():
+    name = request.args.get('name', 'World')
+    template = 'Hello {{ name }}!'
+    return render_template_string(template, name=name)</code></pre>
+
+                <p>
+                See that? The template is defined separately, and user input is passed
+                as a <strong>variable</strong>. The template engine treats it as data,
+                not code. Revolutionary, I know. Someone call the Nobel committee.
+                </p>
+
+                <p><strong>Key takeaways for fixing SSTI:</strong></p>
+                <ul>
+                <li>Never concatenate user input with template strings</li>
+                <li>Always use parameterized templates</li>
+                <li>Treat user input like it's radioactive (because it is)</li>
+                <li>
+                Use sandbox environments if you absolutely MUST allow user-controlled
+                templates (narrator: you probably don't)
+                </li>
+                <li>Keep your template engine updated (shocking advice, I know)</li>
+                </ul>
+
+                <h2>PayloadAllTheThings: Your SSTI Cheat Sheet</h2>
+
+                <p>
+                Speaking of methodologies, let me introduce you to the
+                <a
+                href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection" class="linked-word">
+                PayloadsAllTheThings GitHub repo</a> - the Wikipedia of penetration
+                testing payloads.
+                </p>
+
+                <p>
+                Their SSTI section is basically a "choose your own adventure" book for
+                hackers. It includes:
+                </p>
+
+                <ul>
+                <li>
+                <strong>Detection payloads:</strong> Because step one is confirming the
+                vulnerability exists (try <code>${7*7}</code>, <code>{{7*7}}</code>, or
+                <code>&lt;%=7*7%&gt;</code>)
+                </li>
+                <li>
+                <strong>Template engine identification:</strong> Each engine has its own
+                special syntax quirks
+                </li>
+                <li>
+                <strong>Exploitation payloads:</strong> For Jinja2, Twig, Freemarker,
+                Velocity, and more
+                </li>
+                <li>
+                <strong>RCE payloads:</strong> Because reading files is so last season
+                </li>
+                </ul>
+
+                <p>The methodology is straightforward:</p>
+                <ol>
+                <li>Detect: Try fuzzing with various template syntax patterns</li>
+                <li>Identify: Figure out which template engine is being used</li>
+                <li>Exploit: Use engine-specific payloads to escalate</li>
+                <li>
+                Profit: (Or responsibly disclose, if you're into that sort of thing)
+                </li>
+                </ol>
+
+                <h2>SSTI in the Real World: A Unicorn Sighting</h2>
+
+                <p>
+                Here's the thing about SSTI that nobody wants to admit: <strong>it's
+                usually more suited for CTFs and interviews than real-world bug bounty
+                hunting.</strong>
+                </p>
+
+                <p>
+                Why? Because most production applications don't allow users to directly
+                manipulate templates. It's like finding a developer who still uses
+                Internet Explorer 6 - technically possible, but increasingly rare.
+                </p>
+
+                <p>
+                In CTF challenges, SSTI is everywhere because challenge creators need to
+                test your knowledge. It's the cybersecurity equivalent of "the
+                mitochondria is the powerhouse of the cell" - you need to know it for
+                the test, even if you'll rarely use it.
+                </p>
+
+                <p>
+                In interviews, they ask about SSTI to see if you understand web
+                application security concepts. They don't expect you to have pwned 50
+                production servers with it.
+                </p>
+
+                <p>In real bug bounties? Well...</p>
+
+                <h2>Orange Tsai and the Uber SSTI: When Unicorns Attack</h2>
+
+                <p>
+                But wait! Before you dismiss SSTI as purely academic, let me tell you
+                about the time Orange Tsai (the legend himself) found SSTI in Uber's
+                infrastructure. Yes, UBER. The multi-billion dollar company.
+                </p>
+
+                <p>
+                Orange Tsai discovered that Uber's internal tools were using Jinja2
+                templates in a way that allowed template injection. He chained this with
+                other vulnerabilities to achieve Remote Code Execution on Uber's
+                internal systems.
+                </p>
+
+                <p>
+                The writeup is a masterclass in vulnerability chaining and creative
+                exploitation. He didn't just find SSTI and call it a day - he escalated
+                it, pivoted through the infrastructure, and demonstrated real impact.
+                </p>
+
+                <p>
+                This is important because it shows that while SSTI is rare, it's not
+                extinct. It exists in:
+                </p>
+                <ul>
+                <li>
+                Internal tools and admin panels (where security is an afterthought)
+                </li>
+                <li>
+                Custom CMS implementations (where developers reinvent the wheel, badly)
+                </li>
+                <li>Email template systems (where marketing wants "flexibility")</li>
+                <li>
+                Reporting and analytics dashboards (where "power users" need "custom
+                templates")
+                </li>
+                </ul>
+
+                <p>
+                Orange's Uber finding reminds us: never assume a vulnerability class is
+                "too rare" to look for. The big bounties come from finding what others
+                overlook.
+                </p>
+
+                <h2>TPLmap: Because Manual Testing is for Chumps</h2>
+
+                <p>
+                Now, if you're thinking "manually testing for SSTI sounds tedious,"
+                congratulations on your functioning brain cells! Enter
+                <strong>TPLmap</strong> - the automated SSTI scanner that does the
+                boring work for you.
+                </p>
+
+                <p>TPLmap is like a Swiss Army knife for template injection. It:</p>
+                <ul>
+                <li>Automatically detects SSTI vulnerabilities</li>
+                <li>Identifies the template engine being used</li>
+                <li>Tests for exploitation possibilities</li>
+                <li>Can execute commands if RCE is possible</li>
+                <li>
+                Supports multiple template engines (Jinja2, Mako, Twig, Freemarker,
+                etc.)
+                </li>
+                </ul>
+
+                <p>Basic usage is beautifully simple:</p>
+
+                <pre><code>python tplmap.py -u 'http://target.com/page?name=test'</code></pre>
+
+                <p>
+                TPLmap will automatically inject payloads, detect vulnerabilities, and
+                tell you exactly what you can do. It's like having a senior pentester
+                looking over your shoulder, except it doesn't judge you for your
+                terrible coffee choices.
+                </p>
+
+                <p>
+                Just remember: automated tools are great, but they're not magic. They
+                can miss complex scenarios, and they definitely can't chain
+                vulnerabilities like Orange Tsai. Use TPLmap as a starting point, not a
+                replacement for thinking.
+                </p>
+
+                <h2>Learning SSTI: NahamCon 2022 CTF</h2>
+
+                <p>
+                Want to actually practice SSTI instead of just reading about it? Check
+                out the <strong>NahamCon 2022 CTF SSTI challenge walkthrough</strong>.
+                </p>
+
+                <p>
+                This video demonstrates real SSTI exploitation in a CTF environment.
+                You'll see:
+                </p>
+                <ul>
+                <li>How to identify template injection</li>
+                <li>Crafting payloads step-by-step</li>
+                <li>Bypassing common filters and restrictions</li>
+                <li>Achieving RCE through creative exploitation</li>
+                </ul>
+
+                <p>
+                CTF challenges are perfect for learning SSTI because they provide a
+                safe, legal environment to practice. Unlike production systems, where
+                your "testing" might land you in legal trouble (and not the fun kind).
+                </p>
+
+                <h2>Additional Resources</h2>
+
+                <ul>
+                <li>
+                <strong>PortSwigger Web Security Academy:</strong> Has excellent SSTI
+                labs for hands-on practice
+                </li>
+                <li>
+                <strong>HackTricks SSTI page:</strong> Another comprehensive resource
+                for exploitation techniques
+                </li>
+                <li>
+                <strong>James Kettle's research:</strong> "Server-Side Template
+                Injection: RCE for the modern webapp"
+                </li>
+                </ul>
+
+                <h2>Conclusion: SSTI in Perspective</h2>
+
+                <p>
+                So, is SSTI dead? No. Is it common? Also no. Is it worth learning?
+                <strong>Absolutely yes.</strong>
+                </p>
+
+                <p>SSTI teaches you fundamental concepts about web application security:</p>
+                <ul>
+                <li>Never trust user input (this applies to literally everything)</li>
+                <li>Understand how your frameworks work under the hood</li>
+                <li>Think creatively about exploitation chains</li>
+                <li>Defense in depth matters</li>
+                </ul>
+
+                <p>
+                Will you find SSTI on every bug bounty program? No. Will understanding
+                SSTI make you a better security researcher? Yes.
+                </p>
+
+                <p>
+                Plus, it's a great party trick. Nothing impresses people at social
+                gatherings quite like saying, "I once executed arbitrary code through a
+                template engine." (Okay, maybe don't do this. You'll just get weird
+                looks.)
+                </p>
+
+                <hr>
+
+                <p>
+                <small><strong>Disclaimer:</strong> This post is for educational purposes
+                only. Don't hack things you don't own. Don't be evil. Get permission
+                before testing. The author is not responsible for you doing stupid things
+                with this information.</small>
+                </p>
+
+                <p>
+                <small>Now go forth and inject templates responsibly. Or better yet, go
+                forth and PREVENT template injection. That's the real power move.</small>
+                </p>
+                </div>
+            </article>
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>
