@@ -1,5 +1,12 @@
 [
     {
+        "title": "The Browser’s Broken Heart : DOM Manipulation, BOM Exploits & XSS’s Dirty Little Secrets",
+        "date": "2025-11-8",
+        "excerpt": "",
+        "file": "posts/The_Browser’s_Broken_Heart_:_DOM_Manipulation_,_BOM_Exploits_&_XSS’s_Dirty_Little_Secrets.html",
+        "tags": ["browser", "owasp", "note", "course"]
+    },
+    {
         "title": "The Theater of Human Deceit : A Treatise on Social Manipulation",
         "date": "2025-11-6",
         "excerpt": "",
