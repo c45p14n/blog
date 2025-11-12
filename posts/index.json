@@ -1,5 +1,12 @@
 [
     {
+        "title": "Icarus and the AUR : Flying Too Close to the Compilation Sun",
+        "date": "2025-11-12",
+        "excerpt": "",
+        "file": "posts/Icarus_and_the_AUR_:_Flying_Too_Close_to_the_Compilation_Sun.html",
+        "tags": ["linux", "arch"]
+    },
+    {
         "title": "The Browser’s Broken Heart : DOM Manipulation, BOM Exploits & XSS’s Dirty Little Secrets",
         "date": "2025-11-8",
         "excerpt": "",
