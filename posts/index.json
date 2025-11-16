@@ -1,5 +1,12 @@
 [
     {
+        "title": "Authentication Apocalypse : A Survivor's Guide to Not Getting Pwned",
+        "date": "2025-11-17",
+        "excerpt": "",
+        "file": "posts/Authentication_Apocalypse_:_A_Survivor's_Guide_to_Not_Getting_Pwned.html",
+        "tags": ["owasp", "web", "security", "note", "course"]
+    },
+    {
         "title": "Icarus and the AUR : Flying Too Close to the Compilation Sun",
         "date": "2025-11-12",
         "excerpt": "",

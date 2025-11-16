@@ -1,0 +1,933 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Apocalypse : A Survivor's Guide to Not Getting Pwned | Caspian</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASPIAN</h1>
+            <p class="tagline">// TECH_LOG & DAILY_EXPERIENCES //</p>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+            <article>
+                <div class="post-header">
+                    <h1>Authentication Apocalypse : A Survivor's Guide to Not Getting Pwned</h1>
+                    <div class="post-meta">November 17, 2025</div>
+                </div>
+                <div class="post-content">
+    
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#what-is-auth" class="linked-word">What Even IS Authentication?</a></li>
+        <li><a href="#http-problems" class="linked-word">HTTP: The Amnesiac Protocol</a></li>
+        <li><a href="#storage" class="linked-word">Where We Hide Our Secrets (Spoiler: Badly)</a></li>
+        <li><a href="#auth-types" class="linked-word">The Authentication Zoo</a></li>
+        <li><a href="#cookies-vs-tokens" class="linked-word">Cookies vs Tokens: The Eternal Debate</a></li>
+        <li><a href="#jwt" class="linked-word">JWT: JSON Web Tokens or "Just Why, Though?"</a></li>
+        <li><a href="#jwt-algorithms" class="linked-word">JWT Algorithms: A Cryptographic Minefield</a></li>
+        <li><a href="#jwt-issues" class="linked-word">JWT Issues: When Good Tokens Go Bad</a></li>
+        <li><a href="#sessions" class="linked-word">Sessions and Sticky Business</a></li>
+        <li><a href="#cors-csrf" class="linked-word">CORS, CSRF, and Why We Can't Have Nice Things</a></li>
+        <li><a href="#storage-locations" class="linked-word">Storage Wars: Client vs Server</a></li>
+        <li><a href="#php-example" class="linked-word">PHP: Ancient Wisdom from 1994</a></li>
+        <li><a href="#vulnerabilities" class="linked-word">Common Vulnerabilities: A Greatest Hits Album</a></li>
+        <li><a href="#oauth" class="linked-word">OAuth: Outsourcing Your Problems to Google</a></li>
+        <li><a href="#bearer" class="linked-word">Bearer Authentication: The VIP Pass</a></li>
+    </ol>
+
+    <br> 
+    
+    <hr>
+    
+    <h2 id="what-is-auth">What Even IS Authentication?</h2>
+    
+    <p>Authentication is the process of proving you are who you claim to be.</p>
+    
+    <h3>The Authentication Class System (It's Not a Real Class, Calm Down)</h3>
+    
+    <h4>1. Registration: Where Dreams Begin and Passwords Die</h4>
+    <p>Registration is where users create accounts. This is where they'll use 
+    "password123" and swear they'll remember it (they won't).</p>
+    
+    <pre><code>&lt;form method="POST" action="/register"&gt;
+    &lt;label&gt;Username:&lt;/label&gt;
+    &lt;input type="text" name="username" required&gt;
+    
+    &lt;label&gt;Email:&lt;/label&gt;
+    &lt;input type="email" name="email" required&gt;
+    
+    &lt;label&gt;Password:&lt;/label&gt;
+    &lt;input type="password" name="password" required&gt;
+    
+    &lt;label&gt;Confirm Password:&lt;/label&gt;
+    &lt;input type="password" name="confirm_password" required&gt;
+    
+    &lt;button type="submit"&gt;Register&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    
+    <p><strong>Pro tip:</strong> Always hash passwords. And no, MD5 doesn't count. 
+    This isn't 2005.</p>
+    
+    <h4>2. Login Mechanism: The Daily Ritual of Failure</h4>
+    <p>Where users attempt to remember what they typed during registration. 
+    Spoiler: They can't.</p>
+    
+    <pre><code>&lt;form method="POST" action="/login"&gt;
+    &lt;label&gt;Username or Email:&lt;/label&gt;
+    &lt;input type="text" name="username" required&gt;
+    
+    &lt;label&gt;Password:&lt;/label&gt;
+    &lt;input type="password" name="password" required&gt;
+    
+    &lt;label&gt;
+        &lt;input type="checkbox" name="remember_me"&gt; 
+        Remember Me (for a concerningly long time)
+    &lt;/label&gt;
+    
+    &lt;button type="submit"&gt;Login&lt;/button&gt;
+    &lt;a href="/forgot-password"&gt;Forgot Password? (Of course you did)&lt;/a&gt;
+&lt;/form&gt;</code></pre>
+    
+    <h4>3. Forgot Password: The Most Visited Page on the Internet</h4>
+    <p>Because "password123" was apparently too complex to remember.</p>
+    
+    <pre><code>&lt;form method="POST" action="/forgot-password"&gt;
+    &lt;label&gt;Email:&lt;/label&gt;
+    &lt;input type="email" name="email" required&gt;
+    
+    &lt;button type="submit"&gt;Send Reset Link&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    
+    <p><strong>Security Note:</strong> Send a reset TOKEN, not a new password. 
+    Emailing passwords is like shouting your PIN at the ATM.</p>
+    
+    <h4>4. Two-Factor Authentication (2FA): Because One Factor is for Amateurs</h4>
+    <p>2FA: Making authentication twice as annoying and infinitely more secure.</p>
+    
+    <pre><code>&lt;form method="POST" action="/verify-2fa"&gt;
+    &lt;label&gt;Enter the 6-digit code from your authenticator app:&lt;/label&gt;
+    &lt;input type="text" name="code" pattern="[0-9]{6}" 
+           maxlength="6" required&gt;
+    
+    &lt;button type="submit"&gt;Verify&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    
+    <p>Common 2FA methods: SMS (insecure but convenient), Authenticator Apps 
+    (TOTP), Hardware Keys (for people who don't lose things), and Biometrics 
+    (for people who enjoy living in a sci-fi dystopia).</p>
+    
+    <hr>
+    
+    <h2 id="http-problems">HTTP: The Protocol with Alzheimer's</h2>
+    
+    <p>HTTP is <strong>stateless</strong>. What does that mean? It means HTTP 
+    has the memory of a goldfish with amnesia.</p>
+    
+    <p>Every request is treated as brand new. The server doesn't remember you 
+    from one request to the next. It's like going to the same coffee shop every 
+    day and the barista asking "First time here?" EVERY. SINGLE. TIME.</p>
+    
+    <pre><code>Request 1: "Hi, I'm Alice!"
+Server: "Nice to meet you, Alice!"
+
+Request 2: "It's me again, Alice!"
+Server: "Sorry, do I know you?"
+
+Request 3: "ALICE! WE JUST TALKED!"
+Server: "I'm sorry, have we met before?"</code></pre>
+    
+    <p>This is why we need authentication mechanisms. We need to remind the 
+    server who we are with EVERY. SINGLE. REQUEST.</p>
+    
+    <hr>
+    
+    <h2 id="storage">Where We Hide Our Secrets (Spoiler: Badly)</h2>
+    
+    <h3>The Browser Storage Buffet</h3>
+    
+    <h4>1. HTML Source Code (LOL, NO)</h4>
+    <pre><code>&lt;div id="user-data"&gt;
+    Username: admin
+    Password: super_secret_123
+&lt;/div&gt;</code></pre>
+    <p>If you're storing credentials in HTML, please close this tab and 
+    reconsider your career choices.</p>
+    
+    <h4>2. Cookies (The OG)</h4>
+    <p>Cookies are small pieces of data stored in the browser and sent with 
+    every request. They're like sticky notes that follow you everywhere.</p>
+    
+    <pre><code>Set-Cookie: session_id=abc123; HttpOnly; Secure; 
+            SameSite=Strict; Max-Age=3600</code></pre>
+    
+    <h4>3. LocalStorage (The Persistent One)</h4>
+    <p>Stays forever (or until you clear your browser data in a fit of rage).</p>
+    
+    <pre><code>localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+localStorage.getItem('token');</code></pre>
+    
+    <h4>4. SessionStorage (The Temporary One)</h4>
+    <p>Dies when you close the tab. It's like a relationship with commitment 
+    issues.</p>
+    
+    <pre><code>sessionStorage.setItem('temp_data', 'value');
+sessionStorage.getItem('temp_data');</code></pre>
+    
+    <p><strong>CRITICAL WARNING:</strong> LocalStorage and SessionStorage are 
+    vulnerable to XSS attacks. If you store JWTs there, you're basically leaving 
+    your house keys under the doormat.</p>
+    
+    <hr>
+    
+    <h2 id="auth-types">The Authentication Zoo</h2>
+    
+    <h3>Authentication vs Authorization (Yes, They're Different)</h3>
+    
+    <ul>
+        <li><strong>Authentication:</strong> "Who are you?"</li>
+        <li><strong>Authorization:</strong> "What are you allowed to do?"</li>
+    </ul>
+    
+    <p>Think of it like a concert: Authentication is showing your ticket at 
+    the entrance. Authorization is whether that ticket gets you backstage or 
+    just into the nosebleed section.</p>
+    
+    <hr>
+    
+    <h2 id="cookies-vs-tokens">Cookies vs Tokens: The Eternal Debate</h2>
+    
+    <h3>What Are Cookies? (Besides Delicious)</h3>
+    
+    <p>Cookies are key-value pairs stored by the browser and automatically sent 
+    with every request to the same domain. They're the clingy friend of web 
+    technologies.</p>
+    
+    <pre><code>HTTP Response:
+Set-Cookie: session_id=xyz789; Path=/; HttpOnly; Secure
+
+HTTP Request:
+Cookie: session_id=xyz789</code></pre>
+    
+    <h3>Session Cookies: The Security Guard</h3>
+    
+    <p>A session is server-side storage that holds user data. The cookie just 
+    holds a session ID that references this data.</p>
+    
+    <pre><code>User logs in → Server creates session → Stores session ID in cookie
+User makes request → Cookie sent → Server looks up session → 
+User data retrieved</code></pre>
+    
+    <h4>Authentication Cookie (Session Cookie)</h4>
+    <p>Proves you're logged in. It's your VIP wristband at the web festival.</p>
+    
+    <pre><code>Set-Cookie: AUTH_SESSION=a1b2c3d4; HttpOnly; Secure; 
+            SameSite=Strict; Max-Age=1800</code></pre>
+    
+    <h4>ReAuthentication Token: The "Remember Me" Button's Secret</h4>
+    
+    <p>When you check "Remember Me", the server gives you a long-lived 
+    ReAuthentication token (often in a separate cookie). This token can create 
+    new session cookies without entering your password.</p>
+    
+    <pre><code>Set-Cookie: REAUTH_TOKEN=long_lived_token_here; HttpOnly; 
+            Secure; Max-Age=2592000</code></pre>
+    
+    <p>Session cookie expires? No problem! The ReAuth token gets you a new one. 
+    It's like having a backstage pass that gets you new tickets.</p>
+    
+    <p><strong>Security Warning:</strong> ReAuth tokens are powerful. If stolen, 
+    an attacker can maintain access even after session cookies expire. Rotate 
+    them regularly!</p>
+    
+    <h3>Tokens: The Cool New Kid</h3>
+    
+    <p>Tokens are strings that represent authentication. They're stored 
+    client-side and sent in HTTP headers.</p>
+    
+    <pre><code>Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code></pre>
+    
+    <hr>
+    
+    <h2 id="jwt">JWT: JSON Web Tokens or "Just Why, Though?"</h2>
+    
+    <p>JWT (pronounced "jot" by cool people, "J-W-T" by everyone else) is a 
+    standard for creating tokens that contain JSON data.</p>
+    
+    <h3>JWT Structure: The Three-Layer Cake</h3>
+    
+    <p>A JWT has three parts separated by dots:</p>
+    
+    <pre><code>xxxxx.yyyyy.zzzzz
+HEADER.PAYLOAD.SIGNATURE</code></pre>
+    
+    <h4>1. Header: The Metadata</h4>
+    <pre><code>{
+  "alg": "HS256",
+  "typ": "JWT"
+}</code></pre>
+    <p>Base64URL encoded: <code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</code></p>
+    
+    <h4>2. Payload: The Good Stuff</h4>
+    <pre><code>{
+  "sub": "1234567890",
+  "name": "Alice Wonderland",
+  "iat": 1516239022,
+  "exp": 1516242622,
+  "iss": "myapp.com"
+}</code></pre>
+    
+    <p><strong>Standard Claims:</strong></p>
+    <ul>
+        <li><strong>iat</strong> (Issued At): When the token was created</li>
+        <li><strong>exp</strong> (Expiration): When it dies (please let it die)</li>
+        <li><strong>iss</strong> (Issuer): Who created this token</li>
+        <li><strong>sub</strong> (Subject): Who the token is about</li>
+        <li><strong>aud</strong> (Audience): Who should accept this token</li>
+    </ul>
+    
+    <p>Base64URL encoded: 
+    <code>eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIn0</code></p>
+    
+    <h4>3. Signature: The Trust Seal</h4>
+    <pre><code>HMACSHA256(
+  base64UrlEncode(header) + "." + base64UrlEncode(payload),
+  secret_key
+)</code></pre>
+    
+    <p>The signature ensures the token hasn't been tampered with. Change one 
+    character in the header or payload, and the signature becomes invalid.</p>
+    
+    <h3>How JWT Stops Tampering (The Magic Trick)</h3>
+    
+    <p>Let's say an attacker tries to change their role from "user" to "admin" 
+    in the payload:</p>
+    
+    <ol>
+        <li>Attacker decodes the payload (it's just Base64, not encrypted)</li>
+        <li>Changes <code>"role": "user"</code> to <code>"role": "admin"</code></li>
+        <li>Encodes it back to Base64</li>
+        <li>Sends the modified token to the server</li>
+    </ol>
+    
+    <p><strong>What happens?</strong></p>
+    
+    <pre><code>Server:
+1. Decodes header and payload
+2. Recomputes signature using the secret key
+3. Compares computed signature with received signature
+4. Signatures don't match → Token rejected → Attacker sad</code></pre>
+    
+    <p>The attacker can't recompute the signature because they don't know the 
+    secret key. It's like trying to forge a signature without knowing how the 
+    person writes.</p>
+    
+    <hr>
+    
+    <h2 id="jwt-algorithms">JWT Algorithms: A Cryptographic Minefield</h2>
+    
+    <h3>HMAC HS256 (Symmetric)</h3>
+    <p>Uses a shared secret key. Both the creator and verifier know the same key.</p>
+    
+    <pre><code>signature = HMACSHA256(header.payload, secret_key)</code></pre>
+    
+    <p><strong>Problem:</strong> Everyone who verifies needs the secret. If your 
+    secret leaks, it's game over.</p>
+    
+    <h3>RS256 (Asymmetric)</h3>
+    <p>Uses RSA public/private key pairs. Sign with private key, verify with 
+    public key.</p>
+    
+    <pre><code>signature = RSA_Sign(header.payload, private_key)
+verification = RSA_Verify(signature, public_key)</code></pre>
+    
+    <p><strong>Benefit:</strong> You can verify without having the signing key. 
+    Perfect for distributed systems!</p>
+    
+    <h3>ES256 (Elliptic Curve)</h3>
+    <p>Like RS256 but uses Elliptic Curve cryptography. Smaller keys, same 
+    security. It's the Smart Car of cryptography.</p>
+    
+    <h3>none (THE ALGORITHM OF DOOM)</h3>
+    
+    <p>Some JWT libraries support an algorithm called "none". It means "no 
+    signature verification".</p>
+    
+    <pre><code>{
+  "alg": "none",
+  "typ": "JWT"
+}
+.
+{
+  "sub": "1234567890",
+  "role": "admin"
+}
+.</code></pre>
+    
+    <p>Notice the empty signature? That's because there ISN'T ONE. If your 
+    server accepts "none" algorithm tokens, attackers can create valid tokens 
+    without knowing any secrets.</p>
+    
+    <p><strong>NEVER ACCEPT "none" ALGORITHM IN PRODUCTION. EVER.</strong></p>
+    
+    <hr>
+    
+    <h2 id="jwt-issues">JWT Issues: When Good Tokens Go Bad</h2>
+    
+    <h3>1. Algorithm Confusion Attack</h3>
+    
+    <p>Attacker changes RS256 to HS256. The server, thinking it's HMAC, uses 
+    the PUBLIC KEY as the HMAC secret.</p>
+    
+    <pre><code>Original token (RS256):
+  Signed with private key
+  Verified with public key
+
+Modified token (HS256):
+  "Signed" with public key (which attacker knows)
+  Server verifies with public key (treating it as HMAC secret)
+  Verification succeeds!</code></pre>
+    
+    <p><strong>Prevention:</strong> Explicitly specify accepted algorithms. 
+    Never blindly trust the header.</p>
+    
+    <h3>2. Weak HMAC Key</h3>
+    
+    <p>Using a weak secret like "secret" or "password123" means attackers can 
+    brute-force it.</p>
+    
+    <pre><code>Bad keys:
+- secret
+- password
+- 123456
+- Your app name
+- jwt_secret
+
+Good key:
+- At least 256 bits of random data
+- Example: 4f8b3d7e9c2a1f6b8d5e3c9a7b4f2e8d...</code></pre>
+    
+    <h3>3. JWT Reuse (Replay Attacks)</h3>
+    
+    <p>JWTs are stateless. If stolen, they're valid until expiration. It's like 
+    stealing a ticket that doesn't have a photo ID requirement.</p>
+    
+    <p><strong>Mitigations:</strong></p>
+    <ul>
+        <li>Short expiration times (minutes, not days)</li>
+        <li>Use "jti" (JWT ID) claim with a revocation list</li>
+        <li>Implement refresh tokens</li>
+        <li>Bind tokens to specific clients/IPs (controversial)</li>
+    </ul>
+    
+    <h3>4. Token Storage in LocalStorage</h3>
+    <p>Vulnerable to XSS. Any script on your page can read it.</p>
+    
+    <p><strong>Better approach:</strong> HttpOnly cookies (inaccessible to 
+    scripts).</p>
+    
+    <hr>
+    
+    <h2 id="sessions">JWS, JWK, and Other Alphabet Soup</h2>
+    
+    <h3>JWS (JSON Web Signature)</h3>
+    <p>The formal spec that JWT is based on. JWT is technically a JWS with a 
+    JSON payload. Think of JWS as the parent class.</p>
+    
+    <h3>JWK (JSON Web Key)</h3>
+    <p>A JSON representation of a cryptographic key. Used to distribute public 
+    keys for JWT verification.</p>
+    
+    <pre><code>{
+  "kty": "RSA",
+  "use": "sig",
+  "kid": "key-id-1",
+  "n": "modulus...",
+  "e": "AQAB"
+}</code></pre>
+    
+    <h3>JWT Stateless vs HTTP Stateless: The Philosophical Debate</h3>
+    
+    <p><strong>HTTP Stateless:</strong> Server doesn't remember you between 
+    requests.</p>
+    
+    <p><strong>JWT Stateless:</strong> Server doesn't need to store session data. 
+    The token contains everything.</p>
+    
+    <pre><code>Cookie-based session:
+Request → Server checks session store → Returns data
+(Server must maintain state)
+
+JWT:
+Request → Server verifies token → Extracts data from token
+(No server-side state needed)</code></pre>
+    
+    <p><strong>Trade-off:</strong> JWTs are harder to revoke. You can't just 
+    delete a server-side session. You need token blacklists or wait for 
+    expiration.</p>
+    
+    <h3>Sticky Sessions: When Load Balancers Get Clingy</h3>
+    
+    <p>Sticky sessions ensure a user always hits the same server. Useful for 
+    traditional sessions, unnecessary for JWTs.</p>
+    
+    <pre><code>Traditional sessions:
+User → Load Balancer → Always routes to Server A
+(Because session data is on Server A)
+
+JWT:
+User → Load Balancer → Any server works
+(Token contains all needed data)</code></pre>
+    
+    <hr>
+    
+    <h2 id="cors-csrf">What to Worry About with Cookies</h2>
+    
+    <ul>
+        <li><strong>CSRF:</strong> Cookies are sent automatically, even from 
+        malicious sites</li>
+        <li><strong>XSS:</strong> Can steal cookies if not HttpOnly</li>
+        <li><strong>MITM:</strong> Cookies sent over HTTP can be intercepted 
+        (use Secure flag)</li>
+        <li><strong>Session Fixation:</strong> Attacker sets your session ID</li>
+        <li><strong>Cookie Theft:</strong> Malware can read cookie files</li>
+    </ul>
+    
+    <h3>CORS and CSRF: Why Tokens Make Life Easier</h3>
+    
+    <h4>The Cookie Problem</h4>
+    <p>Cookies are sent automatically with EVERY request to a domain. This 
+    enables CSRF.</p>
+    
+    <pre><code>Evil Site HTML:
+&lt;img src="https://bank.com/transfer?to=attacker&amount=1000"&gt;
+
+Browser automatically sends your bank.com cookies!
+Bank receives authenticated request!
+Money goes bye-bye!</code></pre>
+    
+    <p><strong>CSRF Defense for Cookies:</strong> CSRF tokens, SameSite 
+    attribute, Origin checking.</p>
+    
+    <h4>The Token Solution</h4>
+    <p>Tokens in Authorization headers are NOT sent automatically. Attackers 
+    can't make the browser send them.</p>
+    
+    <pre><code>Authorization: Bearer eyJhbGc...
+
+This header must be added by YOUR code.
+Evil sites can't make the browser add this header.
+CSRF = Not a problem!</code></pre>
+    
+    <p><strong>CORS with Tokens:</strong> You control when tokens are sent. 
+    The browser enforces CORS, preventing unauthorized cross-origin requests.</p>
+    
+    <hr>
+    
+    <h2 id="storage-locations">Storage Wars: Client vs Server</h2>
+    
+    <table border="1">
+        <tr>
+            <th>Storage Type</th>
+            <th>Location</th>
+            <th>Who Can Edit</th>
+            <th>Survives Browser Restart</th>
+        </tr>
+        <tr>
+            <td>Cookies</td>
+            <td>Client (sent to server)</td>
+            <td>Client & Server</td>
+            <td>Yes (if not session cookie)</td>
+        </tr>
+        <tr>
+            <td>LocalStorage</td>
+            <td>Client only</td>
+            <td>Client</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>SessionStorage</td>
+            <td>Client only</td>
+            <td>Client</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>Server Session</td>
+            <td>Server only</td>
+            <td>Server</td>
+            <td>Depends on server config</td>
+        </tr>
+    </table>
+
+    <br>
+    
+    <p><strong>What can you edit?</strong></p>
+    <ul>
+        <li>Client-side storage: User can edit EVERYTHING</li>
+        <li>Server-side session: User can only see session ID, not the data</li>
+    </ul>
+    
+    <p><strong>Security Principle:</strong> Never trust client-side data. 
+    Always validate on the server.</p>
+    
+    <hr>
+    
+    <h2 id="php-example">PHP: Ancient Wisdom from 1994</h2>
+    
+    <h3>Session-Based Authentication in PHP</h3>
+    
+    <pre><code>session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    
+    $user = authenticate($username, $password);
+    
+    if ($user) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
+        
+        session_regenerate_id(true);
+        
+        header('Location: /dashboard');
+        exit;
+    } else {
+        $error = 'Invalid credentials';
+    }
+}
+</code></pre>
+
+    <h3>Checking Authentication</h3>
+    
+    <pre><code>session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: /login');
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+$username = $_SESSION['username'];
+</code></pre>
+
+    <h3>Remember Me Implementation</h3>
+    
+    <pre><code>if (isset($_POST['remember_me'])) {
+    $token = bin2hex(random_bytes(32));
+    
+    $expires = time() + (30 * 24 * 60 * 60);
+    setcookie('remember_token', $token, $expires, '/', 
+              '', true, true);
+    
+}
+</code></pre>
+
+    <h3>Session Storage Configuration</h3>
+    
+    <pre><code>ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 1);
+ini_set('session.cookie_samesite', 'Strict');
+
+ini_set('session.use_only_cookies', 1);
+ini_set('session.use_strict_mode', 1);
+</code></pre>
+    
+    <hr>
+    
+    <h2 id="vulnerabilities">Common Vulnerabilities: A Greatest Hits Album</h2>
+    
+    <h3>1. SQL Injection in Login</h3>
+    <pre><code>WHERE username = '$username' AND password = '$password'
+
+Attacker enters: admin' --
+Result: WHERE username = 'admin' -- AND password = ''
+Everything after -- is commented out. Logged in as admin!</code></pre>
+    
+    <p><strong>Fix:</strong> Use prepared statements. Always.</p>
+    
+    <h3>2. Password Storage (Plaintext Edition)</h3>
+    <pre><code>CREATE TABLE users (
+    username VARCHAR(50),
+    password VARCHAR(50)
+);
+
+INSERT INTO users VALUES ('admin', 'password123');</code></pre>
+    
+    <p>If you're doing this, please return your programming license.</p>
+    
+    <p><strong>Fix:</strong> Use bcrypt, scrypt, or Argon2.</p>
+    
+    <h3>3. Session Fixation</h3>
+    <pre><code>Attacker: Sets PHPSESSID=malicious_id in victim's browser
+Victim: Logs in (server doesn't regenerate session ID)
+Attacker: Uses PHPSESSID=malicious_id to access victim's account</code></pre>
+    
+    <p><strong>Fix:</strong> Regenerate session ID after login.</p>
+    
+    <h3>4. Insufficient Token Expiration</h3>
+    <pre><code>{
+  "exp": 9999999999
+}
+
+This token expires in the year 2286.</code></pre>
+    
+    <p><strong>Fix:</strong> Short-lived access tokens (15 min) + refresh 
+    tokens.</p>
+    
+    <h3>5. Broken Access Control</h3>
+    <pre><code>if (isset($_SESSION['user_id'])) {
+    
+}
+
+Checking authentication but not authorization!</code></pre>
+    
+    <p><strong>Fix:</strong> Check both WHO you are and WHAT you can do.</p>
+    
+    <h3>6. Predictable Password Reset Tokens</h3>
+    <pre><code>$reset_token = md5($email . time());</code></pre>
+    
+    <p>MD5 of predictable data? Congratulations, you've created a puzzle, not 
+    security.</p>
+    
+    <p><strong>Fix:</strong> Cryptographically secure random bytes.</p>
+    
+    <hr>
+    
+    <h2 id="oauth">OAuth: Outsourcing Your Problems to Google</h2>
+    
+    <h3>What's OAuth?</h3>
+    
+    <p>OAuth 2.0 is an authorization framework that allows applications to 
+    obtain limited access to user accounts on another service. Translation: 
+    "Sign in with Google" buttons.</p>
+    
+    <p>It's NOT an authentication protocol (that's OpenID Connect, which is 
+    built on OAuth 2.0). But everyone uses it for authentication anyway.</p>
+    
+    <h3>OAuth 2.0 Flow (Authorization Code Grant)</h3>
+    
+    <pre><code>Step 1: User clicks "Login with Google"
+Your App → Redirect to Google
+
+Step 2: Google Authorization URL
+https://accounts.google.com/oauth/authorize?
+  client_id=YOUR_CLIENT_ID&
+  redirect_uri=https://yourapp.com/callback&
+  response_type=code&
+  scope=openid profile email
+
+Step 3: User approves
+Google → Redirect to redirect_uri with code
+https://yourapp.com/callback?code=AUTH_CODE
+
+Step 4: Exchange code for token
+Your Server → POST to Google
+POST https://oauth2.googleapis.com/token
+Content-Type: application/x-www-form-urlencoded
+
+code=AUTH_CODE&
+client_id=YOUR_CLIENT_ID&
+client_secret=YOUR_CLIENT_SECRET&
+redirect_uri=https://yourapp.com/callback&
+grant_type=authorization_code
+
+Step 5: Get access token
+Google → Your Server
+{
+  "access_token": "ya29.a0AfH6...",
+  "expires_in": 3599,
+  "token_type": "Bearer",
+  "scope": "openid profile email",
+  "id_token": "eyJhbGciOiJSUzI1NiIs..."
+}
+
+Step 6: Use access token
+Your Server → GET user info from Google
+Authorization: Bearer ya29.a0AfH6...
+</code></pre>
+
+    <h3>OAuth Attack Entry Points: Where Things Go Wrong</h3>
+    
+    <h4>1. Client ID Misuse</h4>
+    <p>The client_id is public. Attackers can use YOUR client_id in THEIR 
+    malicious app.</p>
+    
+    <p><strong>Attack:</strong> Attacker creates phishing site using your 
+    client_id. Users think they're authorizing YOUR app but are actually on 
+    attacker's site.</p>
+    
+    <p><strong>Defense:</strong> Validate redirect_uri on your OAuth provider. 
+    Only allow whitelisted callback URLs.</p>
+    
+    <h4>2. Redirect URI Manipulation</h4>
+    
+    <pre><code>Legitimate:
+redirect_uri=https://yourapp.com/callback
+
+Attacker tries:
+redirect_uri=https://evil.com/steal
+redirect_uri=https://yourapp.com.evil.com/callback
+redirect_uri=https://yourapp.com/callback?evil.com
+redirect_uri=https://yourapp.com@evil.com/callback
+</code></pre>
+
+    <p><strong>Defense:</strong></p>
+    <ul>
+        <li>Whitelist EXACT redirect URIs (no wildcards)</li>
+        <li>Use strict string matching</li>
+        <li>Register redirect URIs with OAuth provider</li>
+    </ul>
+    
+    <h4>3. State Parameter Missing (CSRF on OAuth)</h4>
+    
+    <pre><code>Without state:
+User → Attacker's site
+Attacker initiates OAuth flow
+Google → Redirects to your app with attacker's code
+Your app exchanges code for token
+Victim is now logged in as ATTACKER!</code></pre>
+    
+    <p><strong>Defense:</strong> Use state parameter (a random token) to verify 
+    the request originated from your app.</p>
+    
+    <pre><code>$state = bin2hex(random_bytes(16));
+$_SESSION['oauth_state'] = $state;
+
+Authorization URL:
+...&state=$state
+
+Callback validation:
+if ($_GET['state'] !== $_SESSION['oauth_state']) {
+    die('CSRF detected!');
+}
+</code></pre>
+
+    <h4>4. Authorization Code Interception</h4>
+    <p>Authorization codes in URL can be logged, cached, or leaked.</p>
+    
+    <p><strong>Defense:</strong> Use PKCE (Proof Key for Code Exchange) for 
+    public clients.</p>
+    
+    <hr>
+    
+    <h2 id="bearer">Bearer Authentication: The VIP Pass</h2>
+    
+    <h3>What is Bearer Authentication?</h3>
+    
+    <p>Bearer authentication means "whoever holds this token is authorized". 
+    It's like a VIP wristband - anyone wearing it gets in.</p>
+    
+    <pre><code>GET /api/user/profile HTTP/1.1
+Host: api.example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code></pre>
+    
+    <h3>Bearer Token Security</h3>
+    
+    <p><strong>Problem:</strong> If someone steals your bearer token, they can 
+    impersonate you. There's no additional verification.</p>
+    
+    <p><strong>Mitigations:</strong></p>
+    <ul>
+        <li>Always use HTTPS (never send tokens over plain HTTP)</li>
+        <li>Short expiration times</li>
+        <li>Implement refresh token rotation</li>
+        <li>Monitor for suspicious activity</li>
+        <li>Use additional security headers</li>
+    </ul>
+    
+    <h3>Bearer Token Best Practices</h3>
+    
+    <pre><code>DO:
+- Use HTTPS exclusively
+- Store in HttpOnly cookies when possible
+- Implement short expiration (15 min for access tokens)
+- Use refresh tokens for obtaining new access tokens
+- Validate tokens on every request
+- Implement token revocation
+
+DON'T:
+- Store in localStorage (XSS vulnerability)
+- Log tokens (ever)
+- Send tokens in URL parameters
+- Use weak signing algorithms
+- Forget to validate expiration
+- Accept tokens over HTTP
+</code></pre>
+
+    <h3>Example: Validating Bearer Tokens</h3>
+    
+    <pre><code>$headers = getallheaders();
+$auth_header = $headers['Authorization'] ?? '';
+
+if (!preg_match('/Bearer\s+(.*)$/i', $auth_header, $matches)) {
+    http_response_code(401);
+    die('Missing or invalid Authorization header');
+}
+
+$token = $matches[1];
+
+
+if (!$decoded_token) {
+    http_response_code(401);
+    die('Invalid token');
+}
+
+if ($decoded_token['exp'] < time()) {
+    http_response_code(401);
+    die('Token expired');
+}
+
+$user_id = $decoded_token['sub'];
+</code></pre>
+    
+    <hr>
+    
+    <h2>Conclusion: You're Still Going to Get Hacked (But Maybe Less)</h2>
+    
+    <p>Authentication is hard. If it was easy, we wouldn't have passwords written 
+    on sticky notes under keyboards worldwide.</p>
+    
+    <h3>The Golden Rules:</h3>
+    
+    <ol>
+        <li>Hash passwords (bcrypt, scrypt, Argon2)</li>
+        <li>Use HTTPS everywhere</li>
+        <li>Implement 2FA</li>
+        <li>Set HttpOnly and Secure flags on cookies</li>
+        <li>Use short token expiration times</li>
+        <li>Never trust client-side data</li>
+        <li>Regenerate session IDs after login</li>
+        <li>Validate redirect URIs in OAuth</li>
+        <li>Don't accept "none" algorithm in JWTs</li>
+        <li>Use CSRF protection with cookies</li>
+        <li>Monitor for suspicious activity</li>
+        <li>Keep libraries updated</li>
+    </ol>
+    
+    <br>
+
+    <hr>
+    
+    <p><strong>Disclaimer:</strong> This blog post contains sarcasm, bad jokes, 
+    and security advice. Two of these things are valuable. The jokes are not 
+    those things.</p>
+    
+                </div>
+            </article>
+            <a href="../index.html" class="back-link">← Back to all posts</a>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>Caspian | Built with &lt;code&gt; and ☕</p>
+        </div>
+    </footer>
+</body>
+</html>
